@@ -7,6 +7,8 @@ import AdminDashboard from "./pages/Dashboards/AdminDashboard";
 import SellerDashboard from "./pages/Dashboards/SellerDashboard";
 import CustomerDashboard from "./pages/Dashboards/CustomerDashboard";
 import AdminProductForm from "./pages/AdminProductForm";
+import ProductDetails from './pages/ProductDetails';
+
 import './index.css'; 
 
 function App() {
@@ -23,6 +25,7 @@ function App() {
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
 
         <Route path="/admin/addProducts" element={<AdminProductForm />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
 
 
         {/* Redirect any unknown path to home */}
