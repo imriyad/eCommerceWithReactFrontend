@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiShoppingCart, FiUser, FiLogIn, FiLogOut, FiSettings } from "react-icons/fi";
 import { FaSearch } from "react-icons/fa";
-import { AuthContext } from "../context/AuthContext";
+import {AuthContext,AuthProvider, useAuth} from '../context/AuthContext';
 
 const Navbar = ({ onSearch }) => {
   const { user, logout } = useContext(AuthContext);

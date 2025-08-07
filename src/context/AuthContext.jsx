@@ -1,28 +1,36 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
 
-// Create context
+// ✅ Export the context for external use
 export const AuthContext = createContext();
 
-// AuthProvider to wrap around app
+// AuthProvider component to wrap your app
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load user from sessionStorage on mount
+  // Load user data from sessionStorage on initial mount
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Failed to parse user from sessionStorage", error);
+        sessionStorage.removeItem("user");
+      }
     }
   }, []);
 
+  // Login function: save user to state and sessionStorage
   const login = (userData) => {
-    sessionStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    sessionStorage.setItem("user", JSON.stringify(userData));
   };
 
+  // Logout function: clear user state and sessionStorage
   const logout = () => {
-    sessionStorage.removeItem("user");
     setUser(null);
+    sessionStorage.removeItem("user");
   };
 
   return (
@@ -32,5 +40,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// ✅ Add this custom hook
+// Custom hook to use the auth context easily
 export const useAuth = () => useContext(AuthContext);

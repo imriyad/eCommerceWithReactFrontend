@@ -5,7 +5,6 @@ import { FiShoppingCart, FiPlus, FiMinus } from "react-icons/fi";
 import { FaStar, FaRegStar, FaCheck } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
-
 function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -15,8 +14,9 @@ function ProductDetails() {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [specs, setSpecs] = useState({});
-const { user } = useAuth();
-const customerId = user?.id; 
+  const { user } = useAuth();
+  const customerId = user?.id;
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -26,14 +26,23 @@ const customerId = user?.id;
         if (res.data.size) setSelectedSize(res.data.size);
 
         if (res.data.specifications) {
-          try {
-            const parsedSpecs =
-              typeof res.data.specifications === "string"
-                ? JSON.parse(res.data.specifications)
-                : res.data.specifications;
-            setSpecs(parsedSpecs);
-          } catch (parseErr) {
-            console.error("Failed to parse specifications:", parseErr);
+          const spec = res.data.specifications;
+
+          if (typeof spec === "string") {
+            try {
+              const parsed = JSON.parse(spec);
+              if (typeof parsed === "object" && parsed !== null) {
+                setSpecs(parsed);
+              } else {
+                setSpecs({ General: spec });
+              }
+            } catch (err) {
+              console.warn("Specifications not JSON:", spec);
+              setSpecs({ General: spec });
+            }
+          } else if (typeof spec === "object") {
+            setSpecs(spec);
+          } else {
             setSpecs({});
           }
         }
@@ -53,49 +62,29 @@ const customerId = user?.id;
     setQuantity(newQuantity);
   };
 
-  const handleAddToCart = () => {
-    console.log("Added to cart:", {
-      productId: product.id,
-      quantity,
-      color: selectedColor,
-      size: selectedSize,
-    });
-    alert(`${quantity} ${product.name} added to cart!`);
-  };
-const [inWishlist, setInWishlist] = useState(false);
-
-// You can check if the product is already in wishlist on load, if you have that info
-// For now, it's false initially
-
-const handleWishlistToggle = async () => {
-  if (!customerId) {
-    alert("You must be logged in to manage your wishlist.");
-    return;
-  }
-
-  try {
-    // Ensure CSRF token is set for Sanctum
-    await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-
-    if (!inWishlist) {
-      // Add to wishlist
-      await axios.post("http://localhost:8000/api/wishlist", {
-        product_id: product.id,
-        // customer_id: customerId,
-      });
-      alert(`Added "${product.name}" to your wishlist!`);
-    } else {
-      // Remove from wishlist
-      await axios.delete(`http://localhost:8000/api/wishlist/${product.id}`);
-      alert(`Removed "${product.name}" from your wishlist.`);
+  const handleAddToCart = async () => {
+    if (!customerId) {
+      alert("You must be logged in to add items to the cart.");
+      return;
     }
 
-    setInWishlist(!inWishlist);
-  } catch (error) {
-    console.error("Wishlist action failed", error);
-    alert("Something went wrong. Please make sure you're logged in.");
-  }
-};
+    try {
+      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
+
+      const response = await axios.post("http://localhost:8000/api/cart", {
+        customer_id: customerId,
+        product_id: product.id,
+        quantity,
+        color: selectedColor,
+        size: selectedSize,
+      });
+
+      alert(response.data.message || `${quantity} ${product.name} added to cart!`);
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+      alert("Failed to add to cart. Please try again.");
+    }
+  };
 
   const handleBuyNow = () => {
     console.log("Buy now:", {
@@ -140,7 +129,6 @@ const handleWishlistToggle = async () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-gray-900 py-12 px-4">
       <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div className="grid md:grid-cols-2 gap-10 p-10">
-          {/* Product Image */}
           <div className="flex justify-center items-center bg-gray-50 rounded-xl p-6 shadow-inner hover:shadow-lg transition-shadow duration-300">
             <img
               src={
@@ -153,7 +141,6 @@ const handleWishlistToggle = async () => {
             />
           </div>
 
-          {/* Product Info */}
           <div className="flex flex-col justify-between space-y-8">
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight">{product.name}</h1>
@@ -179,7 +166,6 @@ const handleWishlistToggle = async () => {
               )}
             </div>
 
-            {/* Price */}
             <div>
               <div className="flex items-center space-x-4">
                 <span className="text-4xl font-extrabold text-indigo-900">
@@ -212,7 +198,6 @@ const handleWishlistToggle = async () => {
               )}
             </div>
 
-            {/* Description */}
             {product.description && (
               <div>
                 <h3 className="text-2xl font-semibold text-gray-800">Description</h3>
@@ -222,7 +207,6 @@ const handleWishlistToggle = async () => {
               </div>
             )}
 
-            {/* Color Selection */}
             {product.color && (
               <div>
                 <h3 className="text-2xl font-semibold text-gray-800 mb-2">Color</h3>
@@ -233,7 +217,6 @@ const handleWishlistToggle = async () => {
               </div>
             )}
 
-            {/* Size Selection */}
             {product.size && (
               <div>
                 <h3 className="text-2xl font-semibold text-gray-800 mb-2">Size</h3>
@@ -244,7 +227,6 @@ const handleWishlistToggle = async () => {
               </div>
             )}
 
-            {/* Quantity Selector */}
             <div>
               <h3 className="text-2xl font-semibold text-gray-800 mb-3">Quantity</h3>
               <div className="inline-flex border border-gray-300 rounded-lg overflow-hidden">
@@ -270,7 +252,6 @@ const handleWishlistToggle = async () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-5 mt-8">
               <button
                 onClick={handleBuyNow}
@@ -287,29 +268,10 @@ const handleWishlistToggle = async () => {
                 <FiShoppingCart className="w-6 h-6" />
                 Add to Cart
               </button>
-
-              <button
-    onClick={handleWishlistToggle}
-    className={`flex-1 flex items-center justify-center gap-3 font-semibold py-4 rounded-xl shadow-lg focus:outline-none focus:ring-4 transition
-      ${
-        inWishlist
-          ? "bg-yellow-400 text-indigo-900 hover:bg-yellow-500 focus:ring-yellow-300"
-          : "bg-gray-300 text-gray-900 hover:bg-gray-400 focus:ring-gray-300"
-      }`}
-  >
-    {inWishlist ? (
-      <FaStar className="w-6 h-6 text-yellow-500" />
-    ) : (
-      <FaRegStar className="w-6 h-6" />
-    )}
-    {inWishlist ? "In Wishlist" : "Add to Wishlist"}
-  </button>
-
             </div>
           </div>
         </div>
 
-        {/* Specifications Section */}
         {Object.keys(specs).length > 0 && (
           <div className="border-t border-gray-200 px-10 py-8 bg-gray-50 rounded-b-3xl mt-12">
             <h3 className="text-3xl font-bold text-gray-900 mb-6">Specifications</h3>

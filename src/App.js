@@ -17,8 +17,7 @@ import AdminProductList from "./pages/admin/AdminProductList";
 import SellerProductList from "./pages/seller/SellerProductList";
 import SellerEditProduct from "./pages/seller/SellerEditProduct";
 import SellerProductForm from "./pages/seller/SellerProductForm";
-
-
+import CartPage from "./pages/product/CartPage";
 
 import "./index.css";
 
@@ -46,9 +45,10 @@ function App() {
             <Route path="/admin/editProduct/:id" element={<EditProduct />} />
             <Route path="/admin/products" element={<AdminProductList />} />
 
-             <Route path="/seller/products" element={<SellerProductList />} />
-             <Route path="/seller/editProduct/:id" element={<SellerEditProduct />} />
+            <Route path="/seller/products" element={<SellerProductList />} />
+            <Route path="/seller/editProduct/:id" element={<SellerEditProduct />} />
             <Route path="/seller/addProducts" element={<SellerProductForm />} />
+            <Route path="/cart" element={<CartPage />} />
 
 
 
