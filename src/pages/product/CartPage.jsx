@@ -2,8 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiTrash2 } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 const Cart = () => {
+  const navigate = useNavigate();
+
   const { user } = useAuth();
   const customer_id = user?.id;
 
@@ -11,7 +17,11 @@ const Cart = () => {
   const [message, setMessage] = useState(""); // ✅ message state
 
   useEffect(() => {
-    if (!customer_id) return;
+    if (!customer_id) {
+      alert("Please login first.");
+      navigate("/login"); // 🔁 redirect to login page
+      return;
+    }
 
     axios
       .get(`http://localhost:8000/api/cart/${customer_id}`)

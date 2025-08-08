@@ -17,9 +17,9 @@ function Login() {
       sessionStorage.setItem("user", JSON.stringify(user));
       const role = user.role;
 
-      if (role === 'admin') navigate('/admin/dashboard');
-      else if (role === 'seller') navigate('/seller/dashboard');
-      else if (role === 'customer') navigate('/customer/dashboard');
+      if (role === 'admin') window.location.href = '/admin/dashboard';
+      else if (role === 'seller') window.location.href = '/seller/dashboard';
+      else if (role === 'customer') window.location.href = '/customer/dashboard';
       else navigate('/');
     } catch (error) {
       alert('Login failed');
@@ -30,10 +30,10 @@ function Login() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 flex items-center justify-center px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white bg-opacity-90 backdrop-blur-md p-10 rounded-2xl shadow-2xl max-w-md w-full border border-indigo-300"
+        className="bg-white bg-opacity-90 backdrop-blur-md p-10 rounded-2xl  max-w-md w-full border border-indigo-300"
       >
         <h2 className="text-4xl font-extrabold text-center text-indigo-700 mb-8 drop-shadow-lg">
-          Welcome Back to <span className="text-pink-600">ShopEase</span>
+          Welcome Back to ShopEase
         </h2>
 
         <div className="mb-6">
@@ -85,3 +85,6 @@ function Login() {
 }
 
 export default Login;
+
+
+

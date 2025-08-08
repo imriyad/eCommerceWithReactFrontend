@@ -1,10 +1,8 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
 
-// ✅ Export the context for external use
 export const AuthContext = createContext();
 
-// AuthProvider component to wrap your app
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
@@ -33,8 +31,11 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem("user");
   };
 
+  // ✅ Extract role from the user object
+  const role = user?.role || null;
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, role, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
