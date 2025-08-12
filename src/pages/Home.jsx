@@ -101,7 +101,7 @@ const Home = () => {
                   />
                   {product.discount_price && (
                     <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      -{Math.round((1 - product.price / product.discount_price) * 100)}%
+                      -{Math.round((1 - product.discount_price / product.price) * 100)}%
                     </div>
                   )}
                 </div>
@@ -118,12 +118,17 @@ const Home = () => {
                     <span className="text-xs text-white/70 ml-1">(124)</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-bold text-yellow-400">${product.price}</span>
-                      {product.discount_price && (
-                        <span className="text-sm text-white/70 line-through ml-2">${product.discount_price}</span>
-                      )}
-                    </div>
+                  <div>
+  {product.discount_price ? (
+    <>
+      <span className="font-bold text-yellow-400">${product.discount_price}</span>
+      <span className="text-sm text-white/70 line-through ml-2">${product.price}</span>
+    </>
+  ) : (
+    <span className="font-bold text-yellow-400">${product.price}</span>
+  )}
+</div>
+
                     <button
                       className="text-white/70 hover:text-yellow-400 transition-colors"
                       aria-label="Add to cart"

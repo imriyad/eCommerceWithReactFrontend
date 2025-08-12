@@ -18,8 +18,11 @@ import SellerProductList from "./pages/seller/SellerProductList";
 import SellerEditProduct from "./pages/seller/SellerEditProduct";
 import SellerProductForm from "./pages/seller/SellerProductForm";
 import CartPage from "./pages/product/CartPage";
-
 import "./index.css";
+import AdminUsers from "./pages/AdminUsers";
+import CheckoutPage from "./pages/product/CheckoutPage";
+import OrderConfirmation from "./pages/product/OrderConfirmation";
+
 
 function App() {
   return (
@@ -49,7 +52,11 @@ function App() {
             <Route path="/seller/editProduct/:id" element={<SellerEditProduct />} />
             <Route path="/seller/addProducts" element={<SellerProductForm />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="admin/users" element={<AdminUsers/>}/>
 
+            <Route path="/checkout" element={<CheckoutPage/>}/>
+
+            <Route path="/order-confirmation/:orderId" element={< OrderConfirmation/>} />
 
 
             {/* Redirect unknown routes to home */}
