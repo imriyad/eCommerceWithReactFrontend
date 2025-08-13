@@ -22,6 +22,8 @@ import "./index.css";
 import AdminUsers from "./pages/AdminUsers";
 import CheckoutPage from "./pages/product/CheckoutPage";
 import OrderConfirmation from "./pages/product/OrderConfirmation";
+import OrderList from "./pages/product/OrderList";
+
 
 
 function App() {
@@ -58,6 +60,8 @@ function App() {
 
             <Route path="/order-confirmation/:orderId" element={< OrderConfirmation/>} />
 
+
+            <Route path="admin/orders" element={<OrderList/>}/>
 
             {/* Redirect unknown routes to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
