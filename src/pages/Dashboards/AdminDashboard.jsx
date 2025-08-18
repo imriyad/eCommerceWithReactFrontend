@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     total_products: 0,
     total_users: 0,
+    total_orders:0,
   });
 
   useEffect(() => {
@@ -109,7 +110,7 @@ const AdminDashboard = () => {
           </div>
           <div className="bg-white bg-opacity-10 backdrop-blur-md p-6 rounded-xl border border-white border-opacity-20">
             <h3 className="text-lg mb-2">Pending Orders</h3>
-            <p className="text-3xl font-bold">36</p>
+            <p className="text-3xl font-bold">{stats.total_orders}</p>
             <p className="text-amber-300 text-sm mt-1">-8% from yesterday</p>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -25,6 +26,10 @@ export default function Checkout() {
 
   const [activeStep, setActiveStep] = useState(1);
 
+
+  const location = useLocation();
+  const buyNowProduct = location.state?.buyNowProduct; // ✅ extract value
+
   // Fetch cart items
   useEffect(() => {
     if (!customer_id) {
@@ -33,18 +38,26 @@ export default function Checkout() {
       return;
     }
 
-    setLoading(true);
-    axios
-      .get(`http://localhost:8000/api/cart/${customer_id}`)
-      .then((res) => {
-        setCartItems(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch cart items:", err);
-        setLoading(false);
-      });
-  }, [customer_id, navigate]);
+    // Check for Buy Now product
+    if (location.state && location.state.buyNowProduct) {
+      const { product, quantity } = location.state.buyNowProduct;
+      setCartItems([{ id: 0, product, quantity }]);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      axios
+        .get(`http://localhost:8000/api/cart/${customer_id}`)
+        .then((res) => {
+          setCartItems(res.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch cart items:", err);
+          setLoading(false);
+        });
+    }
+  }, [customer_id, navigate, location]);
+
 
   // Calculate total
   const totalPrice = cartItems.reduce(
@@ -95,12 +108,12 @@ export default function Checkout() {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-if (response.data.success) {
-  alert(response.data.message);  
-  navigate(`/order-confirmation/${response.data.order_id}`);
-} else {
-  alert("Order failed: " + response.data.message);
-}
+      if (response.data.success) {
+        alert(response.data.message);
+        navigate(`/order-confirmation/${response.data.order_id}`);
+      } else {
+        alert("Order failed: " + response.data.message);
+      }
     } catch (error) {
       console.error("Order failed:", error);
       if (error.response?.data?.errors) {
@@ -127,34 +140,31 @@ if (response.data.success) {
                   <div className="flex flex-col items-center">
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center 
-                      ${
-                        activeStep >= step
+                      ${activeStep >= step
                           ? "bg-indigo-600 text-white"
                           : "bg-gray-200 text-gray-600"
-                      } 
+                        } 
                       font-semibold`}
                     >
                       {step}
                     </div>
                     <span
-                      className={`text-xs mt-2 ${
-                        activeStep >= step
+                      className={`text-xs mt-2 ${activeStep >= step
                           ? "text-indigo-600 font-medium"
                           : "text-gray-500"
-                      }`}
+                        }`}
                     >
                       {step === 1
                         ? "Shipping"
                         : step === 2
-                        ? "Payment"
-                        : "Review"}
+                          ? "Payment"
+                          : "Review"}
                     </span>
                   </div>
                   {step < 3 && (
                     <div
-                      className={`flex-1 h-1 mx-2 ${
-                        activeStep > step ? "bg-indigo-600" : "bg-gray-200"
-                      }`}
+                      className={`flex-1 h-1 mx-2 ${activeStep > step ? "bg-indigo-600" : "bg-gray-200"
+                        }`}
                     ></div>
                   )}
                 </React.Fragment>
@@ -395,7 +405,7 @@ if (response.data.success) {
                       </p>
                     </div>
 
-                                        <div className="flex justify-between">
+                    <div className="flex justify-between">
                       <button
                         type="button"
                         onClick={() => setActiveStep(2)}
@@ -419,88 +429,89 @@ if (response.data.success) {
 
           {/* Right: Order Summary */}
           <div className="lg:w-1/3">
-  <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
-    <h2 className="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
+            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
 
-    {loading ? (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-4">
-            <div className="bg-gray-200 rounded-lg w-16 h-16 animate-pulse"></div>
-            <div className="flex-1 space-y-2">
-              <div className="bg-gray-200 h-4 rounded animate-pulse w-3/4"></div>
-              <div className="bg-gray-200 h-4 rounded animate-pulse w-1/2"></div>
+              {loading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex gap-4">
+                      <div className="bg-gray-200 rounded-lg w-16 h-16 animate-pulse"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="bg-gray-200 h-4 rounded animate-pulse w-3/4"></div>
+                        <div className="bg-gray-200 h-4 rounded animate-pulse w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : cartItems.length === 0 ? (
+                <div className="text-center py-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p className="mt-2 text-gray-600">Your cart is empty</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Cart Items with Scroll */}
+                  <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="flex items-start gap-4">
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={`http://localhost:8000/storage/${item.product.image}`}
+                            alt={item.product.name}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                          <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                            {item.quantity}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-800 truncate">{item.product.name}</h3>
+                          <p className="text-sm text-gray-500">${item.product.price} each</p>
+                        </div>
+                        <div className="font-medium text-gray-900 whitespace-nowrap">
+                          ${(item.product.price * item.quantity)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Order Totals */}
+                  <div className="border-t border-gray-200 pt-4 space-y-3">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Subtotal</span>
+                      <span>${totalPrice}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Shipping</span>
+                      <span className="text-green-600">Free</span>
+                    </div>
+                    {formData.payment === "cod" && (
+                      <div className="flex justify-between text-gray-600">
+                        <span>COD Fee</span>
+                        <span>$2.00</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Grand Total */}
+                  <div className="border-t border-gray-200 pt-4 flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span className="text-indigo-600">
+                      ${(formData.payment === "cod" ? totalPrice + 2 : totalPrice)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        ))}
-      </div>
-    ) : cartItems.length === 0 ? (
-      <div className="text-center py-8">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-        <p className="mt-2 text-gray-600">Your cart is empty</p>
-      </div>
-    ) : (
-      <div className="space-y-6">
-        {/* Cart Items with Scroll */}
-        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-          {cartItems.map((item) => (
-            <div key={item.id} className="flex items-start gap-4">
-              <div className="relative flex-shrink-0">
-                <img
-                  src={`http://localhost:8000/storage/${item.product.image}`}
-                  alt={item.product.name}
-                  className="w-16 h-16 object-cover rounded-lg"
-                />
-                <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {item.quantity}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-800 truncate">{item.product.name}</h3>
-                <p className="text-sm text-gray-500">${item.product.price} each</p>
-              </div>
-              <div className="font-medium text-gray-900 whitespace-nowrap">
-                ${(item.product.price * item.quantity)}
-              </div>
-            </div>
-          ))}
-        </div>
+        </form>
 
-        {/* Order Totals */}
-        <div className="border-t border-gray-200 pt-4 space-y-3">
-          <div className="flex justify-between text-gray-600">
-            <span>Subtotal</span>
-            <span>${totalPrice}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Shipping</span>
-            <span className="text-green-600">Free</span>
-          </div>
-          {formData.payment === "cod" && (
-            <div className="flex justify-between text-gray-600">
-              <span>COD Fee</span>
-              <span>$2.00</span>
-            </div>
-          )}
-        </div>
-
-        {/* Grand Total */}
-        <div className="border-t border-gray-200 pt-4 flex justify-between font-bold text-lg">
-          <span>Total</span>
-          <span className="text-indigo-600">
-            ${(formData.payment === "cod" ? totalPrice + 2 : totalPrice)}
-          </span>
-        </div>
       </div>
-    )}
-  </div>
     </div>
-      </form>
 
-  </div>
-  </div>
-  
-)}
+  )
+}
 
