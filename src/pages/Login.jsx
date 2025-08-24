@@ -15,6 +15,7 @@ function Login() {
       const res = await axios.post('http://localhost:8000/api/login', form);
       const user = res.data.user;
       sessionStorage.setItem("user", JSON.stringify(user));
+        console.log("Logged in user:", user);
       const role = user.role;
 
       if (role === 'admin') window.location.href = '/admin/dashboard';

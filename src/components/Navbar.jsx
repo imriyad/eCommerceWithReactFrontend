@@ -13,11 +13,13 @@ import {
   FiLogOut,
   FiSettings,
   FiBarChart2,
+  FiTag
 } from "react-icons/fi";
 import { FaSearch } from "react-icons/fa";
-import { AuthContext,useAuth } from "../context/AuthContext";
+import { AuthContext, useAuth } from "../context/AuthContext";
 import debounce from "lodash.debounce";
 import axios from "axios";
+
 
 const Navbar = ({ onSearch }) => {
   const { user, logout } = useContext(AuthContext);
@@ -27,8 +29,11 @@ const Navbar = ({ onSearch }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
- const { role } = useAuth();
-console.log("Current Role:", role); 
+  // const { role } = useAuth();
+  const { role, currentUser } = useAuth(); // make sure useAuth provides this
+
+  console.log("Current Role:", role);
+  console.log("Current User:", user || currentUser);
 
 
   // Refs
@@ -132,6 +137,35 @@ console.log("Current Role:", role);
             <span className="text-xl font-bold text-yellow-400">ShopEase</span>
           </Link>
 
+          {/* Navigation Links - Added Special Offers Link */}
+          <div className="hidden md:flex space-x-6 mx-4">
+            <Link 
+              to="/" 
+              className="hover:text-yellow-400 transition-colors"
+            >
+              Home
+            </Link>
+            {/* <Link 
+              to="/products" 
+              className="hover:text-yellow-400 transition-colors"
+            >
+              Products
+            </Link> */}
+            <Link 
+              to="/special-offers" 
+              className="text-yellow-400 hover:text-yellow-300 font-bold flex items-center"
+            >
+              <FiTag className="mr-1 h-4 w-4" />
+              Special Offers
+            </Link>
+            <Link 
+              to="/categories" 
+              className="hover:text-yellow-400 transition-colors"
+            >
+              Categories
+            </Link>
+          </div>
+
           {/* Search Bar */}
           <form
             ref={searchRef}
@@ -199,34 +233,34 @@ console.log("Current Role:", role);
                 </button>
 
                 {showDropdown && (
-  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-30">
-    <Link
-      to={`/${role}/dashboard`}
-      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
-      onClick={() => setShowDropdown(false)}
-    >
-      <FiBarChart2 className="mr-2" />
-      Dashboard
-    </Link>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-30">
+                    <Link
+                      to={`/${role}/dashboard`}
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <FiBarChart2 className="mr-2" />
+                      Dashboard
+                    </Link>
 
-    <Link
-      to="/account"
-      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
-      onClick={() => setShowDropdown(false)}
-    >
-      <FiSettings className="mr-2" />
-      Account Settings
-    </Link>
+                    <Link
+                      to="/account"
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <FiSettings className="mr-2" />
+                      Account Settings
+                    </Link>
 
-    <button
-      onClick={handleLogout}
-      className="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
-    >
-      <FiLogOut className="mr-2" />
-      Logout
-    </button>
-  </div>
-)}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
+                    >
+                      <FiLogOut className="mr-2" />
+                      Logout
+                    </button>
+                  </div>
+                )}
 
               </div>
             ) : (

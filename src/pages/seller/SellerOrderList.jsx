@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function OrderList() {
+function SellerOrderList() {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -10,10 +10,10 @@ function OrderList() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:8000/api/orders', {
+      const res = await axios.get('http://localhost:8000/api/seller/orders', {
         params: { search, page },
         headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('adminToken'),
+          Authorization: 'Bearer ' + localStorage.getItem('sellerToken'),
         },
       });
       setOrders(res.data.data);
@@ -30,11 +30,11 @@ function OrderList() {
   const updateStatus = async (orderId, newStatus) => {
     try {
       await axios.patch(
-        `http://localhost:8000/api/orders/${orderId}`,
+        `http://localhost:8000/api/seller/orders/${orderId}`,
         { status: newStatus },
         {
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('adminToken'),
+            Authorization: 'Bearer ' + localStorage.getItem('sellerToken'),
           },
         }
       );
@@ -48,9 +48,9 @@ function OrderList() {
   const cancelOrder = async (orderId) => {
     if (!window.confirm('Are you sure you want to cancel this order?')) return;
     try {
-      await axios.delete(`http://localhost:8000/api/orders/${orderId}`, {
+      await axios.delete(`http://localhost:8000/api/seller/orders/${orderId}`, {
         headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('adminToken'),
+          Authorization: 'Bearer ' + localStorage.getItem('sellerToken'),
         },
       });
       fetchOrders();
@@ -62,7 +62,7 @@ function OrderList() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Order Management</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Seller Order Management</h1>
 
       <input
         type="text"
@@ -157,4 +157,4 @@ function OrderList() {
   );
 }
 
-export default OrderList;
+export default SellerOrderList;

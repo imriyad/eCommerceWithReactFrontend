@@ -8,3 +8,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </AuthProvider>
 );
+
+ if (module.hot) {
+ module.hot.accept()
+ }

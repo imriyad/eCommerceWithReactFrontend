@@ -133,7 +133,7 @@ function SellerProductList() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end space-x-2">
                         <button
-                          onClick={() => navigate(`/admin/editProduct/${product.id}`)}
+                          onClick={() => navigate(`/seller/editProduct/${product.id}`)}
                           className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center"
                         >
                           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

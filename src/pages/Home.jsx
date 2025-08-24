@@ -24,17 +24,36 @@ const Home = () => {
         `http://localhost:8000/api/products?page=${page}&search=${encodeURIComponent(search)}`
       );
 
+      let productsData = [];
       if (Array.isArray(res.data)) {
-        setProducts(res.data);
+        productsData = res.data;
         setMeta({ current_page: 1, last_page: 1 });
       } else if (res.data && Array.isArray(res.data.data)) {
-        setProducts(res.data.data);
+        productsData = res.data.data;
         setMeta(res.data.meta || { current_page: 1, last_page: 1 });
       } else {
         setError("Unexpected response format from server.");
         setProducts([]);
         setMeta({ current_page: 1, last_page: 1 });
+        return;
       }
+
+      // Fetch active promotions
+      const promosRes = await axios.get("http://localhost:8000/api/promotions/active");
+      const activePromos = promosRes.data;
+
+      // Attach promotion discount to each product
+      const productsWithPromo = productsData.map((product) => {
+        const promo = activePromos.find(p =>
+          p.applicable_products?.includes(product.id)
+        );
+        if (promo) {
+          return { ...product, discount_price: promo.discount_price || product.price };
+        }
+        return product;
+      });
+
+      setProducts(productsWithPromo);
     } catch (err) {
       console.error("Error fetching products:", err);
       setError("Failed to fetch products. Please try again later.");
@@ -43,6 +62,7 @@ const Home = () => {
     }
     setLoading(false);
   };
+
 
   const goToPage = (page) => {
     if (page >= 1 && page <= meta.last_page) {
@@ -59,82 +79,81 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
 
       {/* Main Content */}
-      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">
             Discover Amazing <span className="text-yellow-400">Products</span>
           </h1>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+          <p className="text-base text-white/80 max-w-xl mx-auto">
             Shop the latest trends and best deals on thousands of products
           </p>
         </div>
 
         {/* Products Grid */}
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+          <div className="flex justify-center items-center h-48">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-400"></div>
           </div>
         ) : error ? (
-          <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 max-w-md mx-auto text-center">
-            <p className="text-red-100 font-medium">{error}</p>
+          <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 max-w-md mx-auto text-center">
+            <p className="text-red-100 font-medium text-sm">{error}</p>
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white/10 rounded-lg p-8 text-center">
-            <p className="text-xl text-yellow-300">
+          <div className="bg-white/10 rounded-lg p-6 text-center">
+            <p className="text-lg text-yellow-300">
               {searchQuery ? "No products match your search" : "No products found"}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
               <Link
                 to={`/product/${product.id}`}
                 key={product.id}
-                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-yellow-400/20 transition-all duration-300 hover:-translate-y-1"
+                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg overflow-hidden hover:shadow-lg hover:shadow-yellow-400/20 transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="relative overflow-hidden h-60">
+                <div className="relative overflow-hidden h-48">
                   <img
                     src={`http://localhost:8000/storage/${product.image}`}
-                    
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   {product.discount_price && (
-                    <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      -{Math.round((1 - product.discount_price / product.price) * 100)}%
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      {Math.round((1 - product.discount_price / product.price) * 100)}% OFF
                     </div>
                   )}
                 </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-1 line-clamp-1">{product.name}</h3>
+                <div className="p-3">
+                  <h3 className="font-bold text-base mb-1 line-clamp-1">{product.name}</h3>
                   <div className="flex items-center mb-2">
                     {[1, 2, 3, 4, 5].map((star) =>
                       star <= 4 ? (
-                        <FaStar key={star} className="text-yellow-400 w-4 h-4" />
+                        <FaStar key={star} className="text-yellow-400 w-3 h-3" />
                       ) : (
-                        <FaRegStar key={star} className="text-yellow-400 w-4 h-4" />
+                        <FaRegStar key={star} className="text-yellow-400 w-3 h-3" />
                       )
                     )}
                     <span className="text-xs text-white/70 ml-1">(124)</span>
                   </div>
                   <div className="flex items-center justify-between">
-                  <div>
-  {product.discount_price ? (
-    <>
-      <span className="font-bold text-yellow-400">${product.discount_price}</span>
-      <span className="text-sm text-white/70 line-through ml-2">${product.price}</span>
-    </>
-  ) : (
-    <span className="font-bold text-yellow-400">${product.price}</span>
-  )}
-</div>
+                    <div>
+                      {product.discount_price ? (
+                        <>
+                          <span className="font-bold text-yellow-400 text-sm">${product.discount_price}</span>
+                          <span className="text-xs text-white/70 line-through ml-2">${product.price}</span>
+                        </>
+                      ) : (
+                        <span className="font-bold text-yellow-400 text-sm">${product.price}</span>
+                      )}
+                    </div>
 
                     <button
                       className="text-white/70 hover:text-yellow-400 transition-colors"
                       aria-label="Add to cart"
                     >
-                      <FiShoppingCart />
+                      <FiShoppingCart className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -145,13 +164,13 @@ const Home = () => {
 
         {/* Pagination */}
         {!loading && !error && meta.last_page > 1 && (
-          <div className="flex justify-center items-center mt-12 space-x-2">
+          <div className="flex justify-center items-center mt-8 space-x-2">
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
-              <FiChevronLeft className="h-5 w-5" />
+              <FiChevronLeft className="h-4 w-4" />
             </button>
 
             {Array.from({ length: Math.min(5, meta.last_page) }, (_, i) => {
@@ -170,11 +189,10 @@ const Home = () => {
                 <button
                   key={pageNum}
                   onClick={() => goToPage(pageNum)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    currentPage === pageNum
-                      ? "bg-yellow-400 text-indigo-900 font-bold"
-                      : "bg-white/10 hover:bg-white/20"
-                  }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${currentPage === pageNum
+                    ? "bg-yellow-400 text-indigo-900 font-bold"
+                    : "bg-white/10 hover:bg-white/20"
+                    }`}
                 >
                   {pageNum}
                 </button>
@@ -184,50 +202,50 @@ const Home = () => {
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === meta.last_page}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
-              <FiChevronRight className="h-5 w-5" />
+              <FiChevronRight className="h-4 w-4" />
             </button>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <footer className="bg-white/5 backdrop-blur-md border-t border-white/10 py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="bg-white/5 backdrop-blur-md border-t border-white/10 py-6 mt-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
-              <FiShoppingCart className="h-6 w-6 text-yellow-400 mr-2" />
-              <span className="text-xl font-bold text-yellow-400">ShopEase</span>
+            <div className="flex items-center mb-3 md:mb-0">
+              <FiShoppingCart className="h-5 w-5 text-yellow-400 mr-2" />
+              <span className="text-lg font-bold text-yellow-400">ShopEase</span>
             </div>
-            <div className="flex space-x-6">
+            <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors"
+                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
               >
                 About
               </a>
               <a
                 href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors"
+                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
               >
                 Contact
               </a>
               <a
                 href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors"
+                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
               >
                 Privacy
               </a>
               <a
                 href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors"
+                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
               >
                 Terms
               </a>
             </div>
           </div>
-          <div className="mt-6 text-center text-sm text-white/50">
+          <div className="mt-4 text-center text-xs text-white/50">
             &copy; {new Date().getFullYear()} ShopEase. All rights reserved.
           </div>
         </div>
