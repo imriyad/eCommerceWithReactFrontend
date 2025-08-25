@@ -1,11 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FiShoppingCart, FiPlus, FiMinus } from "react-icons/fi";
-import { FaStar, FaRegStar, FaCheck } from "react-icons/fa";
+import { FiShoppingCart, FiPlus, FiMinus, FiHeart } from "react-icons/fi";
+import { FaStar, FaRegStar, FaCheck, FaHeart } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-// import { FiHeart } from "react-icons/fi";
-// import { FaHeart } from "react-icons/fa";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -20,8 +18,10 @@ function ProductDetails() {
   const { user } = useAuth();
   const customerId = user?.id;
   const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(false);
+  const [wishlistChecked, setWishlistChecked] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +40,22 @@ function ProductDetails() {
         );
 
         setProduct({ ...productData, promotions: productPromotions });
+
+        // Check if product is in user's wishlist
+        if (customerId) {
+          try {
+            const wishlistRes = await axios.get(`http://localhost:8000/api/wishlist/${customerId}`);
+            const wishlistItems = wishlistRes.data;
+            const isInWishlist = wishlistItems.some(item => item.id === productData.id);
+            setInWishlist(isInWishlist);
+          } catch (wishlistErr) {
+            console.error('Failed to fetch wishlist:', wishlistErr);
+          } finally {
+            setWishlistChecked(true);
+          }
+        } else {
+          setWishlistChecked(true);
+        }
 
         // Fetch related products from the same category
         if (productData.category_id) {
@@ -78,36 +94,38 @@ function ProductDetails() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, customerId]);
 
+  const addToWishlist = async () => {
+    if (!customerId) {
+      alert("Please log in to add items to your wishlist.");
+      return;
+    }
+
+    if (inWishlist) {
+      alert("This product is already in your wishlist.");
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
+      
+      // Add to wishlist
+      await axios.post(`http://localhost:8000/api/wishlist/${customerId}/${product.id}`);
+      setInWishlist(true);
+      alert("Product added to wishlist");
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to add to wishlist");
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   const handleQuantityChange = (value) => {
     const newQuantity = Math.max(1, Math.min(value, product?.stock || 10));
     setQuantity(newQuantity);
   };
-
-  // const handleWishlistToggle = async () => {
-  //   if (!customerId) {
-  //     alert("Please log in to manage your wishlist.");
-  //     return;
-  //   }
-
-  //   try {
-  //     await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-  //     const endpoint = inWishlist ? 
-  //       `http://localhost:8000/api/wishlist/${product.id}` : 
-  //       "http://localhost:8000/api/wishlist";
-
-  //     const res = inWishlist ? 
-  //       await axios.delete(endpoint, { data: { customer_id: customerId } }) :
-  //       await axios.post(endpoint, { customer_id: customerId, product_id: product.id });
-
-  //     alert(res.data.message || (inWishlist ? "Removed from wishlist" : "Added to wishlist"));
-  //     setInWishlist(!inWishlist);
-  //   } catch (err) {
-  //     alert(err.response?.data?.message || "Wishlist operation failed");
-  //   }
-  // };
 
   const handleAddToCart = async () => {
     if (!customerId) {
@@ -172,7 +190,7 @@ function ProductDetails() {
         {/* Main Product Section */}
         <div className="grid md:grid-cols-2 gap-6 p-6">
           {/* Product Image */}
-          <div className="flex justify-center items-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 shadow-inner hover:shadow-lg transition-all duration-300 group">
+          <div className="flex justify-center items-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 shadow-inner hover:shadow-lg transition-all duration-300 group relative">
             <div className="relative overflow-hidden rounded-lg">
               <img
                 src={product.image ? `http://localhost:8000/storage/${product.image}` : "https://via.placeholder.com/600x600?text=No+Image"}
@@ -187,6 +205,25 @@ function ProductDetails() {
               }`}>
                 {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
               </div>
+              
+              {/* Wishlist Button - Only show if not already in wishlist */}
+              {!inWishlist && (
+                <button
+                  onClick={addToWishlist}
+                  disabled={wishlistLoading}
+                  className={`absolute top-2 left-2 p-2 rounded-full shadow-lg transition-all duration-300 bg-white text-gray-700 hover:bg-pink-50 hover:text-pink-500 ${wishlistLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  aria-label="Add to wishlist"
+                >
+                  <FiHeart className="w-5 h-5" />
+                </button>
+              )}
+              
+              {/* Show checkmark if already in wishlist */}
+              {inWishlist && (
+                <div className="absolute top-2 left-2 p-2 rounded-full shadow-lg bg-pink-500 text-white">
+                  <FaCheck className="w-5 h-5" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -339,6 +376,7 @@ function ProductDetails() {
               >
                 <span className="text-base">Buy Now</span>
               </button>
+              
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
@@ -346,6 +384,34 @@ function ProductDetails() {
               >
                 <FiShoppingCart className="w-5 h-5" />
                 <span className="text-base">Add to Cart</span>
+              </button>
+              
+              {/* Wishlist Button */}
+              <button
+                onClick={addToWishlist}
+                disabled={product.stock === 0 || inWishlist || wishlistLoading || !wishlistChecked}
+                className={`w-full flex items-center justify-center gap-2 font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+                  inWishlist 
+                    ? 'bg-green-100 text-green-700 border border-green-300' 
+                    : 'bg-gradient-to-r from-pink-50 to-pink-100 text-pink-700 border border-pink-200 hover:from-pink-100 hover:to-pink-200'
+                }`}
+              >
+                {wishlistLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-pink-500"></div>
+                    <span className="text-base">Checking...</span>
+                  </>
+                ) : inWishlist ? (
+                  <>
+                    <FaCheck className="w-5 h-5" />
+                    <span className="text-base">In Wishlist</span>
+                  </>
+                ) : (
+                  <>
+                    <FiHeart className="w-5 h-5" />
+                    <span className="text-base">Add to Wishlist</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

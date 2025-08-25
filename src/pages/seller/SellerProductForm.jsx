@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 function AdminProductForm() {
   const [form, setForm] = useState({
@@ -40,6 +41,20 @@ function AdminProductForm() {
     const val = type === 'checkbox' ? e.target.checked : value;
     setForm({ ...form, [name]: val });
   };
+  const { user } = useAuth(); // get logged-in admin
+
+  const logSellerActivity = async (message) => {
+    try {
+      await axios.post('http://localhost:8000/api/seller/recent-activities', {
+        seller_id: user.id, // make sure you have `user` object (from context or session)
+        message: message,
+      });
+    } catch (error) {
+      console.error("Error logging admin activity:", error);
+    }
+  };
+
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -68,8 +83,8 @@ function AdminProductForm() {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
       setMessage('✅ Product created successfully!');
+      logSellerActivity(`Created product with name ${form.name}`);
       setForm({
         name: '', description: '', price: '', discount_price: '', tax: '',
         brand: '', stock: '', sku: '', weight: '', dimensions: '', tags: '',
@@ -143,19 +158,19 @@ function AdminProductForm() {
 
           {/* Categorization */}
           <Section title="Categorization" icon="M4 6h16M4 12h16M4 18h16">
-            <Select 
-              label="Category" 
-              name="category_id" 
-              value={form.category_id} 
-              onChange={handleChange} 
+            <Select
+              label="Category"
+              name="category_id"
+              value={form.category_id}
+              onChange={handleChange}
               required
               options={[{ value: '', label: '-- Select Category --' }, ...categories.map(cat => ({ value: cat.id, label: cat.name }))]}
             />
             <Input label="Tags (comma separated)" name="tags" value={form.tags} onChange={handleChange} />
-            <Select 
-              label="Status" 
-              name="status" 
-              value={form.status} 
+            <Select
+              label="Status"
+              name="status"
+              value={form.status}
               onChange={handleChange}
               options={[
                 { value: 'Published', label: 'Published' },
@@ -163,10 +178,10 @@ function AdminProductForm() {
                 { value: 'Archived', label: 'Archived' }
               ]}
             />
-            <Toggle 
-              label="Is Active?" 
-              name="is_active" 
-              checked={form.is_active} 
+            <Toggle
+              label="Is Active?"
+              name="is_active"
+              checked={form.is_active}
               onChange={(e) => handleChange({ target: { name: 'is_active', value: e.target.checked } })}
             />
           </Section>
@@ -212,8 +227,8 @@ function AdminProductForm() {
 
           {/* Submit Button */}
           <div className="md:col-span-2 pt-6">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting}
               className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
             >

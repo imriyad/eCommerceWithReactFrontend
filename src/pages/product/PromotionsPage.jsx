@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext"; // adjust path if needed
+
 
 // API base URL
 const API_URL = "http://localhost:8000/api/promotions";
@@ -41,6 +43,18 @@ const getActivePromotionForProduct = (productId) => {
       setIsLoading(false);
     }
   };
+    const { user } = useAuth(); // get logged-in admin
+  
+  const logAdminActivity = async (message) => {
+  try {
+    await axios.post('http://localhost:8000/api/admin/recent-activities', {
+      admin_id: user.id, // make sure you have `user` object (from context or session)
+      message: message,
+    });
+  } catch (error) {
+    console.error("Error logging admin activity:", error);
+  }
+};
 
   useEffect(() => {
     fetchPromotions();
@@ -66,6 +80,8 @@ const getActivePromotionForProduct = (productId) => {
             ? formData.applicable_products.split(",")
             : [],
         });
+                logAdminActivity(`Promotion Edited with ${editingId}`);
+
       } else {
         await axios.post(API_URL, {
           ...formData,
@@ -73,6 +89,7 @@ const getActivePromotionForProduct = (productId) => {
             ? formData.applicable_products.split(",")
             : [],
         });
+        logAdminActivity(`Promotion Created with name ${formData.name}`);
       }
       setFormData({
         name: "",
@@ -111,6 +128,7 @@ const getActivePromotionForProduct = (productId) => {
     if (window.confirm("Are you sure you want to delete this promotion?")) {
       try {
         await axios.delete(`${API_URL}/${id}`);
+        logAdminActivity(`Deleted promotion with ID ${id}`);
         fetchPromotions();
       } catch (error) {
         console.error("Error deleting promotion:", error);

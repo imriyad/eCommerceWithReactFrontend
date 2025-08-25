@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -13,6 +14,17 @@ const AdminUsers = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+const { user } = useAuth(); // get logged-in admin
+  const logAdminActivity = async (message) => {
+  try {
+    await axios.post('http://localhost:8000/api/admin/recent-activities', {
+      admin_id: user.id, // make sure you have `user` object (from context or session)
+      message: message,
+    });
+  } catch (error) {
+    console.error("Error logging admin activity:", error);
+  }
+};
 
   const fetchUsers = async () => {
     try {
@@ -44,8 +56,10 @@ const AdminUsers = () => {
     try {
       if (editingId) {
         await axios.put(`http://localhost:8000/api/admin/users/${editingId}`, formData);
+        logAdminActivity(`User Edited with ID ${editingId}`);
       } else {
         await axios.post('http://localhost:8000/api/admin/users', formData);
+        logAdminActivity(`User Created with email ${formData.email}`);
       }
       setEditingId(null);
       setFormData({ name: '', email: '', password: '' });
@@ -66,6 +80,7 @@ const AdminUsers = () => {
       try {
         await axios.delete(`http://localhost:8000/api/admin/users/${id}`);
         await fetchUsers();
+        logAdminActivity(`User Deleted with ID ${id}`);
       } catch (err) {
         console.error(err);
         setError('Failed to delete user. Please try again.');

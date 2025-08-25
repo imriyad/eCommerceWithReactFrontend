@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 function AdminProductList() {
   const [products, setProducts] = useState([]);
@@ -28,6 +29,17 @@ function AdminProductList() {
 
     fetchProducts();
   }, []);
+  const { user } = useAuth(); // get logged-in admin
+  const logAdminActivity = async (message) => {
+  try {
+    await axios.post('http://localhost:8000/api/admin/recent-activities', {
+      admin_id: user.id, // make sure you have `user` object (from context or session)
+      message: message,
+    });
+  } catch (error) {
+    console.error("Error logging admin activity:", error);
+  }
+};
 
   // Delete a product
   const handleDelete = async (id) => {
@@ -36,6 +48,9 @@ function AdminProductList() {
     try {
       await axios.delete(`http://localhost:8000/api/products/${id}`);
       setProducts(prev => prev.filter(product => product.id !== id));
+      alert("Product deleted successfully.");
+      logAdminActivity(`Deleted product with ID ${id}`);
+      
     } catch (err) {
       console.error("Error deleting product:", err);
       alert("Failed to delete product. Please try again.");

@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 function OrderList() {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth(); // get logged-in admin
+
+  const logSellerActivity = async (message) => {
+  try {
+    await axios.post('http://localhost:8000/api/seller/recent-activities', {
+      seller_id: user.id, // make sure you have `user` object (from context or session)
+      message: message,
+    });
+  } catch (error) {
+    console.error("Error logging admin activity:", error);
+  }
+};
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -15,7 +28,9 @@ function OrderList() {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('adminToken'),
         },
+      
       });
+
       setOrders(res.data.data);
     } catch (err) {
       alert('Error loading orders');
@@ -38,8 +53,10 @@ function OrderList() {
           },
         }
       );
+      
       fetchOrders();
       alert('Order status updated');
+      logSellerActivity(`Updated order ID ${orderId} to status ${newStatus}`);
     } catch {
       alert('Failed to update status');
     }
@@ -55,6 +72,7 @@ function OrderList() {
       });
       fetchOrders();
       alert('Order cancelled');
+      logSellerActivity(`Cancelled order with ID ${orderId}`);
     } catch {
       alert('Failed to cancel order');
     }

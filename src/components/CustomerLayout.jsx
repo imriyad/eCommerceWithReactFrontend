@@ -18,7 +18,7 @@ import {
   FiStar
 } from "react-icons/fi";
 
-const CustomerLayout = () => {
+const CustomerLayout = ({ showSidebar = true }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,10 +28,8 @@ const CustomerLayout = () => {
     { title: "Dashboard", icon: <FiHome />, path: "/customer/dashboard" },
     { title: "My Orders", icon: <FiShoppingBag />, path: "/customer/orders" },
     { title: "Wishlist", icon: <FiHeart />, path: "/customer/wishlist" },
-    { title: "My Products", icon: <FiBox />, path: "/customer/products" },
     { title: "Payment Methods", icon: <FiCreditCard />, path: "/customer/payments" },
     { title: "Profile", icon: <FiUser />, path: "/customer/profile" },
-    { title: "Messages", icon: <FiMessageSquare />, path: "/customer/messages" },
     { title: "Settings", icon: <FiSettings />, path: "/customer/settings" },
     { title: "Help & Support", icon: <FiHelpCircle />, path: "/customer/support" },
   ];
@@ -59,6 +57,19 @@ const CustomerLayout = () => {
     navigate("/login");
   };
 
+  // Don't render sidebar if showSidebar is false
+  if (!showSidebar) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 text-gray-800">
+        <main className="p-4 lg:p-6">
+          <div className="bg-white rounded-2xl shadow-md p-4 lg:p-6 min-h-[calc(100vh-32px)]">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 text-gray-800">
       {/* Mobile sidebar backdrop */}
@@ -69,7 +80,7 @@ const CustomerLayout = () => {
         ></div>
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Only show when showSidebar is true */}
       <aside className={`w-64 bg-gradient-to-b from-indigo-900 via-purple-800 to-pink-700 text-white p-6 flex flex-col fixed h-screen z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-pink-300">
@@ -82,8 +93,6 @@ const CustomerLayout = () => {
             <FiX size={20} />
           </button>
         </div>
-        
-     
         
         <nav className="flex-1">
           <ul className="space-y-1">
@@ -143,7 +152,6 @@ const CustomerLayout = () => {
             <div className="w-10"></div> {/* Spacer for balance */}
           </div>
 
-         
           {/* This will render the child page */}
           <Outlet />
         </div>

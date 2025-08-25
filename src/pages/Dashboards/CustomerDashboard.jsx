@@ -278,7 +278,7 @@ const CustomerDashboard = () => {
                   <FiShoppingCart className="text-indigo-600 mr-3" />
                   <span className="text-indigo-700 font-medium">View Cart</span>
                 </Link>
-                <Link to="/wishlist" className="flex items-center p-3 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors">
+                <Link to="/customer/wishlist" className="flex items-center p-3 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors">
                   <FiHeart className="text-pink-600 mr-3" />
                   <span className="text-pink-700 font-medium">My Wishlist</span>
                 </Link>

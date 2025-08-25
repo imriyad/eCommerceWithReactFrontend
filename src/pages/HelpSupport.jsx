@@ -12,6 +12,7 @@ const HelpSupport = () => {
 
       {/* FAQs */}
       <section className="mb-10">
+        
         <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
           <FiHelpCircle className="text-blue-500" /> Frequently Asked Questions
         </h2>

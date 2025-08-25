@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 function EditProduct() {
   const [form, setForm] = useState({ name: "", brand: "", price: "", stock: "" });
@@ -16,11 +17,24 @@ function EditProduct() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+  const { user } = useAuth(); // get logged-in admin
+  const logAdminActivity = async (message) => {
+    try {
+      await axios.post('http://localhost:8000/api/admin/recent-activities', {
+        admin_id: user.id, // make sure you have `user` object (from context or session)
+        message: message,
+      });
+    } catch (error) {
+      console.error("Error logging admin activity:", error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.put(`/api/products/${id}`, form);
+      alert("Product updated successfully.");
+      logAdminActivity(`Edited product with ID ${id}`); // Log the edit action
       navigate("/admin/products");
     } catch (err) {
       console.error(err);

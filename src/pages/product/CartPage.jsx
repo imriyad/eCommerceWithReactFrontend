@@ -14,11 +14,6 @@ const Cart = () => {
 
   // Fetch cart items
   useEffect(() => {
-    if (!customer_id) {
-      alert("Please login first.");
-      navigate("/login");
-      return;
-    }
 
     axios
       .get(`http://localhost:8000/api/cart/${customer_id}`)
@@ -113,8 +108,8 @@ const Cart = () => {
                   </button>
                 </div>
 
-                <p className="text-sm text-gray-600">Color: {item.color}</p>
-                <p className="text-sm text-gray-600">Size: {item.size}</p>
+                <p className="text-sm text-gray-600">Color: {item.product.color}</p>
+                <p className="text-sm text-gray-600">Size: {item.product.size}</p>
               </div>
 
               <div className="flex flex-col items-end">

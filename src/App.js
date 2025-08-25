@@ -36,6 +36,7 @@ import CategoryProducts from "./pages/CategoryProducts";
 import CustomerProfile from "./pages/CustomerProfile";
 import HelpSupport from "./pages/HelpSupport";
 import Settings from "./pages/Settings";
+import CustomerWishlist from "./pages/product/CustomerWishlist";
 
 
 function App() {
@@ -70,11 +71,8 @@ function App() {
               <Route path="profile" element={<CustomerProfile />} />
               <Route path="support" element={<HelpSupport />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="wishlist" element={<CustomerWishlist />} />
 
-
-
-              {/* <Route path="wishlist" element={<WishlistPage />} /> */}
-              {/* Add other customer routes */}
             </Route>
 
             {/* Seller Layout wrapper */}
@@ -85,7 +83,6 @@ function App() {
               <Route path="editProduct/:id" element={<SellerEditProduct />} />
               <Route path="addProducts" element={<SellerProductForm />} />
               <Route path="orders" element={<OrderList />} />
-              {/* Add more seller routes as needed */}
             </Route>
 
 
@@ -98,16 +95,13 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/categories/:id/products" element={<CategoryProducts />} />
-
             <Route path="/cart" element={<CartPage />} />
-
             <Route path="/checkout" element={<CheckoutPage />} />
-
             <Route path="/order-confirmation/:orderId" element={< OrderConfirmation />} />
 
             <Route path="/account" element={<AccountSettings />} />
             <Route path="/special-offers" element={<SpecialOffers />} />
-            
+
             {/* Redirect unknown routes to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
