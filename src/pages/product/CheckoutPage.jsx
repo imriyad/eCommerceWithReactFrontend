@@ -3,11 +3,76 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const customer_id = user?.id;
+
+  const stripePromise = loadStripe("pk_test_51RVyt0Q8SsBu9JNWYySosf553VZKOn8MbIhJzqRSTeBMTYCKlWEk3MjohDVnaqk7WT8PjDdhwopn6jRc7Yg7ALfB00or2FVctC"); // replace with your Stripe public key
+  const CardPayment = ({ formData }) => {
+    const stripe = useStripe();
+    const elements = useElements();
+    const [error, setError] = useState(null);
+    const [processing, setProcessing] = useState(false);
+
+    const handleCardPayment = async () => {
+      setProcessing(true);
+      setError(null);
+
+      try {
+        // 1. Create payment intent on backend
+        const { data } = await axios.post("http://localhost:8000/api/create-payment-intent", {
+          amount: Math.round(parseFloat(formData.totalAmount) * 100), // amount in cents
+        });
+
+        const clientSecret = data.clientSecret;
+
+        if (!clientSecret) {
+          setError("No client secret returned from backend.");
+          return false;
+        }
+
+        // 2. Confirm card payment using client_secret
+        const cardElement = elements.getElement(CardElement);
+        const result = await stripe.confirmCardPayment(data.clientSecret, {
+          payment_method: { card: cardElement, billing_details: { name: formData.fullName, email: formData.email } }
+        });
+
+        if (result.error) {
+          setError(result.error.message); // Payment failed
+          return false;
+        }
+        if (result.paymentIntent.status === "succeeded") {
+          return true; // Payment successful
+        } else if (result.paymentIntent.status === "requires_payment_method") {
+          setError("Payment failed. Please use another card.");
+          return false;
+        } else {
+        }
+
+        return false;
+      } catch (err) {
+        console.error("Payment error:", err.message);
+        setError(err.message);
+        return false;
+      } finally {
+        setProcessing(false);
+      }
+    };
+
+
+    return (
+      <div className="mt-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+        <CardElement className="p-2 border border-gray-300 rounded-lg" />
+        {error && <p className="text-red-600">{error}</p>}
+      </div>
+    );
+  };
+
 
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +82,7 @@ export default function Checkout() {
     address: "",
     city: "",
     postal_code: "", // match backend field name
-    payment: "card", // Default to card, options: 'card', 'paypal', 'cod'
+    payment: "cash_on_delivery", // Default to card, options: 'card', 'paypal', 'cod'
     cardNumber: "",
     expiry: "",
     cvc: "",
@@ -150,8 +215,8 @@ export default function Checkout() {
                     </div>
                     <span
                       className={`text-xs mt-2 ${activeStep >= step
-                          ? "text-indigo-600 font-medium"
-                          : "text-gray-500"
+                        ? "text-indigo-600 font-medium"
+                        : "text-gray-500"
                         }`}
                     >
                       {step === 1
@@ -304,7 +369,7 @@ export default function Checkout() {
                     </label>
 
                     {/* Conditional fields for card payment */}
-                    {formData.payment === "card" && (
+                    {/* {formData.payment === "card" && (
                       <div className="mt-6 space-y-4 p-4 bg-gray-50 rounded-lg">
                         <input
                           type="text"
@@ -345,6 +410,11 @@ export default function Checkout() {
                           />
                         </div>
                       </div>
+                    )} */}
+                    {formData.payment === "card" && (
+                      <Elements stripe={stripePromise}>
+                        <CardPayment formData={{ ...formData, totalAmount: totalPrice }} />
+                      </Elements>
                     )}
 
                     {formData.payment === "cod" && (

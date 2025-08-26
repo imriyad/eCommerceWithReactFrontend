@@ -41,7 +41,7 @@ function AdminProductForm() {
     const val = type === 'checkbox' ? e.target.checked : value;
     setForm({ ...form, [name]: val });
   };
-  const { user } = useAuth(); // get logged-in admin
+  const { user } = useAuth(); 
 
   const logSellerActivity = async (message) => {
     try {
@@ -53,8 +53,6 @@ function AdminProductForm() {
       console.error("Error logging admin activity:", error);
     }
   };
-
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
