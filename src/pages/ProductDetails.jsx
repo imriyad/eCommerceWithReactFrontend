@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FiShoppingCart, FiPlus, FiMinus, FiHeart } from "react-icons/fi";
+import { FiShoppingCart, FiPlus, FiMinus, FiHeart, FiStar } from "react-icons/fi";
 import { FaStar, FaRegStar, FaCheck, FaHeart } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
@@ -63,7 +63,7 @@ function ProductDetails() {
           try {
             const relatedRes = await axios.get(`http://localhost:8000/api/categories/${productData.category_id}/products`);
             let relatedProductsData = [];
-            
+
             // Handle different response structures
             if (relatedRes.data && Array.isArray(relatedRes.data)) {
               relatedProductsData = relatedRes.data;
@@ -72,12 +72,12 @@ function ProductDetails() {
             } else if (relatedRes.data && relatedRes.data.data) {
               relatedProductsData = relatedRes.data.data;
             }
-            
+
             // Filter out the current product and limit to 6 related products
             const filteredRelated = relatedProductsData
               .filter(relatedProduct => relatedProduct.id !== productData.id)
               .slice(0, 6);
-            
+
             setRelatedProducts(filteredRelated);
           } catch (relatedErr) {
             console.error('Failed to fetch related products:', relatedErr);
@@ -110,7 +110,7 @@ function ProductDetails() {
     setWishlistLoading(true);
     try {
       await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      
+
       // Add to wishlist
       await axios.post(`http://localhost:8000/api/wishlist/${customerId}/${product.id}`);
       setInWishlist(true);
@@ -153,6 +153,18 @@ function ProductDetails() {
     navigate("/checkout", { state: { buyNowProduct: { product, quantity } } });
     window.scrollTo(0, 0);
   };
+
+  const handleReview = () => {
+    navigate(`/product/${product.id}/review`, {
+      state: {
+        productId: product.id,
+        productName: product.name // sending the product name
+      }
+    });
+    window.scrollTo(0, 0);
+  };
+
+
 
   const navigateToProduct = (productId) => {
     navigate(`/product/${productId}`);
@@ -198,14 +210,13 @@ function ProductDetails() {
                 className="w-full max-h-[350px] object-contain rounded-lg transform transition-all duration-300 group-hover:scale-105 group-hover:rotate-1"
               />
               {/* Floating badge for stock status */}
-              <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold shadow-lg ${
-                product.stock > 0 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-red-500 text-white'
-              }`}>
+              <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold shadow-lg ${product.stock > 0
+                ? 'bg-green-500 text-white'
+                : 'bg-red-500 text-white'
+                }`}>
                 {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
               </div>
-              
+
               {/* Wishlist Button - Only show if not already in wishlist */}
               {!inWishlist && (
                 <button
@@ -217,7 +228,7 @@ function ProductDetails() {
                   <FiHeart className="w-5 h-5" />
                 </button>
               )}
-              
+
               {/* Show checkmark if already in wishlist */}
               {inWishlist && (
                 <div className="absolute top-2 left-2 p-2 rounded-full shadow-lg bg-pink-500 text-white">
@@ -242,19 +253,28 @@ function ProductDetails() {
                     New Arrival
                   </span>
                 </div>
-                
+
                 <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-900 via-purple-800 to-pink-700 bg-clip-text text-transparent">
                   {product.name}
                 </h1>
-                
-                <div className="flex items-center space-x-2">
+
+                {/* <div className="flex items-center space-x-2">
                   <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => i < 4 ? <FaStar key={i} className="w-4 h-4" /> : <FaRegStar key={i} className="w-4 h-4" />)}
+                    {[...Array(5)].map((_, i) => {
+                      if (i < Math.floor(product.avg_rating)) {
+                        return <FaStar key={i} className="w-4 h-4" />;
+                      } else if (i < product.avg_rating) {
+                        return <FaStar key={i} className="w-4 h-4" style={{ clipPath: "inset(0 " + (5 - (product.avg_rating - Math.floor(product.avg_rating)) * 5) + "% 0 0)" }} />;
+                      } else {
+                        return <FaRegStar key={i} className="w-4 h-4" />;
+                      }
+                    })}
                   </div>
-                  <span className="text-gray-500 font-medium text-xs">(1,247 reviews)</span>
+                  <span className="text-gray-500 font-medium text-xs">({product.total_reviews})</span>
                   <span className="text-gray-400">•</span>
-                  <span className="text-gray-500 font-medium text-xs">4.8 out of 5</span>
-                </div>
+                  <span className="text-gray-500 font-medium text-xs">{product.avg_rating} out of 5</span>
+                </div> */}
+
               </div>
 
               {/* Price Section */}
@@ -269,7 +289,7 @@ function ProductDetails() {
                         ${product.price}
                       </span>
                       <span className="text-xs font-semibold text-green-600">
-                        Save ${(parseFloat(product.price) - parseFloat(product.discount_price)).toFixed(2)}
+                        Save ${(parseFloat(product.price) - parseFloat(product.discount_price))}
                       </span>
                     </div>
                   )}
@@ -368,50 +388,87 @@ function ProductDetails() {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-2">
+            <div className="space-y-3 p-4 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl">
+              {/* Buy Now Button */}
               <button
                 onClick={handleBuyNow}
                 disabled={product.stock === 0}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="relative w-full group overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                <span className="text-base">Buy Now</span>
+                <span className="relative z-10 flex items-center justify-center">
+                  <span className="text-lg tracking-wide">Buy Now</span>
+                  <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                  </svg>
+                </span>
+                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                  <div className="absolute -inset-10 bg-gradient-to-r from-yellow-400 to-orange-400 opacity-0 group-hover:opacity-20 transition-opacity duration-500 transform group-hover:scale-110 rotate-12"></div>
+                </div>
               </button>
-              
+
+              {/* Add to Cart Button */}
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="relative w-full group overflow-hidden bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                <FiShoppingCart className="w-5 h-5" />
-                <span className="text-base">Add to Cart</span>
+                <span className="relative z-10 flex items-center justify-center">
+                  <svg className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  <span className="text-lg tracking-wide">Add to Cart</span>
+                </span>
+                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                  <div className="absolute -inset-10 bg-gradient-to-r from-blue-400 to-teal-400 opacity-0 group-hover:opacity-20 transition-opacity duration-500 transform group-hover:scale-110 rotate-12"></div>
+                </div>
               </button>
-              
+
+              {/* Review Button */}
+              <button
+                onClick={() => handleReview()}
+                className="relative w-full group overflow-hidden bg-gradient-to-r from-blue-50 via-white to-blue-50 text-blue-700 border-2 border-blue-200 font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <span className="relative z-10 flex items-center justify-center">
+                  <svg className="w-5 h-5 mr-2 transform group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span className="text-lg tracking-wide">Write a Review</span>
+                </span>
+                <div className="absolute inset-0 bg-blue-100 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+              </button>
               {/* Wishlist Button */}
               <button
                 onClick={addToWishlist}
                 disabled={product.stock === 0 || inWishlist || wishlistLoading || !wishlistChecked}
-                className={`w-full flex items-center justify-center gap-2 font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
-                  inWishlist 
-                    ? 'bg-green-100 text-green-700 border border-green-300' 
-                    : 'bg-gradient-to-r from-pink-50 to-pink-100 text-pink-700 border border-pink-200 hover:from-pink-100 hover:to-pink-200'
-                }`}
+                className={`relative w-full group overflow-hidden font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${inWishlist
+                    ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-2 border-green-200'
+                    : 'bg-gradient-to-r from-pink-50 to-rose-50 text-pink-700 border-2 border-pink-200'
+                  }`}
               >
                 {wishlistLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-pink-500"></div>
-                    <span className="text-base">Checking...</span>
-                  </>
+                  <span className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-pink-500 mr-2"></div>
+                    <span className="text-lg tracking-wide">Checking...</span>
+                  </span>
                 ) : inWishlist ? (
-                  <>
-                    <FaCheck className="w-5 h-5" />
-                    <span className="text-base">In Wishlist</span>
-                  </>
+                  <span className="relative z-10 flex items-center justify-center">
+                    <svg className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-lg tracking-wide">In Wishlist</span>
+                  </span>
                 ) : (
-                  <>
-                    <FiHeart className="w-5 h-5" />
-                    <span className="text-base">Add to Wishlist</span>
-                  </>
+                  <span className="relative z-10 flex items-center justify-center">
+                    <svg className="w-5 h-5 mr-2 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span className="text-lg tracking-wide">Add to Wishlist</span>
+                  </span>
                 )}
+
+                {/* Hover effect overlay */}
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${inWishlist ? 'bg-green-400' : 'bg-pink-400'
+                  }`}></div>
               </button>
             </div>
           </div>

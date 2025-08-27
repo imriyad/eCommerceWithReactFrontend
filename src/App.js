@@ -37,6 +37,7 @@ import CustomerProfile from "./pages/CustomerProfile";
 import HelpSupport from "./pages/HelpSupport";
 import Settings from "./pages/Settings";
 import CustomerWishlist from "./pages/product/CustomerWishlist";
+import Reviews from "./pages/product/Reviews";
 
 
 function App() {
@@ -101,6 +102,10 @@ function App() {
 
             <Route path="/account" element={<AccountSettings />} />
             <Route path="/special-offers" element={<SpecialOffers />} />
+            
+            <Route path="/product/:id/review" element={<Reviews />} />
+
+            
 
             {/* Redirect unknown routes to home */}
             <Route path="*" element={<Navigate to="/" replace />} />

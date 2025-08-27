@@ -43,7 +43,7 @@ const Home = () => {
       const activePromos = promosRes.data;
 
       // Attach promotion discount to each product
-      const productsWithPromo = productsData.map((product) => {
+      let productsWithPromo = productsData.map((product) => {
         const promo = activePromos.find(p =>
           p.applicable_products?.includes(product.id)
         );
@@ -53,7 +53,21 @@ const Home = () => {
         return product;
       });
 
-      setProducts(productsWithPromo);
+      // Fetch average rating for each product
+      const productsWithRating = await Promise.all(
+        productsWithPromo.map(async (product) => {
+          try {
+            const reviewRes = await axios.get(`http://localhost:8000/api/reviews/product/${product.id}`);
+            const avgRating = reviewRes.data.avg_rating || 0;
+            return { ...product, avgRating };
+          } catch (err) {
+            console.error(`Error fetching rating for product ${product.id}`, err);
+            return { ...product, avgRating: 0 };
+          }
+        })
+      );
+
+      setProducts(productsWithRating);
     } catch (err) {
       console.error("Error fetching products:", err);
       setError("Failed to fetch products. Please try again later.");
@@ -62,7 +76,6 @@ const Home = () => {
     }
     setLoading(false);
   };
-
 
   const goToPage = (page) => {
     if (page >= 1 && page <= meta.last_page) {
@@ -77,7 +90,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
-
       {/* Main Content */}
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         {/* Hero Section */}
@@ -129,13 +141,13 @@ const Home = () => {
                   <h3 className="font-bold text-base mb-1 line-clamp-1">{product.name}</h3>
                   <div className="flex items-center mb-2">
                     {[1, 2, 3, 4, 5].map((star) =>
-                      star <= 4 ? (
+                      star <= Math.round(product.avgRating) ? (
                         <FaStar key={star} className="text-yellow-400 w-3 h-3" />
                       ) : (
                         <FaRegStar key={star} className="text-yellow-400 w-3 h-3" />
                       )
                     )}
-                    <span className="text-xs text-white/70 ml-1">(124)</span>
+                    <span className="text-xs text-white/70 ml-1">({product.avgRating})</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
@@ -148,7 +160,6 @@ const Home = () => {
                         <span className="font-bold text-yellow-400 text-sm">${product.price}</span>
                       )}
                     </div>
-
                     <button
                       className="text-white/70 hover:text-yellow-400 transition-colors"
                       aria-label="Add to cart"
@@ -219,30 +230,10 @@ const Home = () => {
               <span className="text-lg font-bold text-yellow-400">ShopEase</span>
             </div>
             <div className="flex space-x-4">
-              <a
-                href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
-              >
-                About
-              </a>
-              <a
-                href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
-              >
-                Contact
-              </a>
-              <a
-                href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
-              >
-                Privacy
-              </a>
-              <a
-                href="#"
-                className="text-white/70 hover:text-yellow-400 transition-colors text-sm"
-              >
-                Terms
-              </a>
+              <a href="#" className="text-white/70 hover:text-yellow-400 transition-colors text-sm">About</a>
+              <a href="#" className="text-white/70 hover:text-yellow-400 transition-colors text-sm">Contact</a>
+              <a href="#" className="text-white/70 hover:text-yellow-400 transition-colors text-sm">Privacy</a>
+              <a href="#" className="text-white/70 hover:text-yellow-400 transition-colors text-sm">Terms</a>
             </div>
           </div>
           <div className="mt-4 text-center text-xs text-white/50">
