@@ -31,6 +31,7 @@ function AdminProductForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    document.title = "ShopEase - Create Product";
     axios.get('http://localhost:8000/api/categories')
       .then(res => setCategories(res.data))
       .catch(err => console.error('Failed to load categories', err));

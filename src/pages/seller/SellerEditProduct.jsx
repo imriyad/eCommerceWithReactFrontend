@@ -9,10 +9,12 @@ function SellerEditProduct() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "ShopEase - Edit Product";
     axios.get(`/api/products/${id}`)
       .then(res => setForm(res.data))
       .catch(err => console.error(err));
   }, [id]);
+  
   const { user } = useAuth(); // get logged-in admin
 
     const logSellerActivity = async (message) => {

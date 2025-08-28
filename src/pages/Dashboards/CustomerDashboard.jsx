@@ -37,6 +37,7 @@ const CustomerDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "ShopEase - Customer Dashboard";
    
     const fetchCustomerData = async () => {
       try {

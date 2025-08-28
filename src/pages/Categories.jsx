@@ -10,6 +10,10 @@ const Categories = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
+   useEffect(() => {
+    document.title = "ShopEase-Categories";
+  }, []);
+
   useEffect(() => {
     axios
       .get("/api/categories")

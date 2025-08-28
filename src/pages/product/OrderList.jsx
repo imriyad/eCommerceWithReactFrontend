@@ -39,6 +39,7 @@ function OrderList() {
   };
 
   useEffect(() => {
+    document.title = "ShopEase - Order Management";
     fetchOrders();
   }, [search, page]);
 

@@ -17,6 +17,7 @@ const CustomerOrders = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "ShopEase - My Orders";
    
 
     const fetchOrders = async () => {

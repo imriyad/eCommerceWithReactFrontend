@@ -8,6 +8,7 @@ const SpecialOffers = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        document.title = "ShopEase - Special Offers";
         const fetchData = async () => {
             try {
                 setLoading(true);

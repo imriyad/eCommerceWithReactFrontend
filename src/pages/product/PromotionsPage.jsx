@@ -57,6 +57,7 @@ const getActivePromotionForProduct = (productId) => {
 };
 
   useEffect(() => {
+    document.title = "ShopEase - Promotions Management";
     fetchPromotions();
   }, []);
 

@@ -15,6 +15,7 @@ export default function OrderConfirmation() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    document.title = "ShopEase - Order Confirmation";
     async function fetchOrder() {
       try {
         setLoading(true);

@@ -30,6 +30,7 @@ const AccountSettings = () => {
     axios.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
 
     useEffect(() => {
+        document.title = "ShopEase - Account Settings";
         if (user?.email) setEmail(user.email);
         if (user?.email_verified_at) setIsEmailVerified(true);
     }, [user]);

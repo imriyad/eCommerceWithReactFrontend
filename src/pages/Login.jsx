@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+     useEffect(() => {
+      document.title = "ShopEase - Login";
+    }, []);
+  
 
   const handleSubmit = async e => {
     e.preventDefault();

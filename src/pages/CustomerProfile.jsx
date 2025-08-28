@@ -7,7 +7,11 @@ const CustomerProfile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
+ 
   useEffect(() => {
+
+    document.title = "ShopEase - Customer Profile";
+
   
     const fetchProfile = async () => {
       try {

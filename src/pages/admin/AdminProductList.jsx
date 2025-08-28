@@ -11,6 +11,7 @@ function AdminProductList() {
 
   // Fetch products
   useEffect(() => {
+    document.title = "ShopEase - Admin Product List";
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/products");

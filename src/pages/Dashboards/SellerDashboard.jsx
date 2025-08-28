@@ -14,6 +14,7 @@ const SellerDashboard = () => {
   const { user } = useAuth(); // get logged-in seller
 
   useEffect(() => {
+    document.title = "ShopEase - Seller Dashboard";
     if (!user) return;
 
     // fetch stats

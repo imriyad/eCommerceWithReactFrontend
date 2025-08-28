@@ -18,6 +18,7 @@ const CustomerWishlist = () => {
 
     // Fetch wishlist items
     useEffect(() => {
+        document.title = "ShopEase - My Wishlist";
 
         axios
             .get(`http://localhost:8000/api/wishlist/${customer_id}`)

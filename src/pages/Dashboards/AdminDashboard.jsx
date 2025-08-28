@@ -14,15 +14,9 @@ const AdminDashboard = () => {
   const { user } = useAuth(); // get logged-in admin
 
   useEffect(() => {
+    document.title = "ShopEase - Admin Dashboard";
     if (!user) return;
 
-    // log dashboard visit
-    // axios.post('http://localhost:8000/api/admin/recent-activities', {
-    //   admin_id: user.id,
-    //   message: 'Visited dashboard',
-    // });
-
-    // fetch stats
     axios
       .get("http://localhost:8000/api/admin/stats")
       .then((response) => setStats(response.data))
@@ -33,6 +27,7 @@ const AdminDashboard = () => {
       .get(`http://localhost:8000/api/admin/recent-activities/${user.id}`)
       .then((response) => setActivities(response.data))
       .catch((error) => console.error("Failed to load activities:", error))
+      
       .finally(() => setLoadingActivities(false));
   }, [user]);
 

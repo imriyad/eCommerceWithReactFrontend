@@ -12,6 +12,7 @@ const AdminUsers = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+      document.title = "ShopEase - Admin Users";
     fetchUsers();
   }, []);
 const { user } = useAuth(); // get logged-in admin

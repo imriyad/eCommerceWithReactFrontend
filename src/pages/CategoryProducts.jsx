@@ -9,6 +9,10 @@ const CategoryProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+     useEffect(() => {
+      document.title = "ShopEase - Category Products";
+    }, []);
+  
 
   useEffect(() => {
     setLoading(true);

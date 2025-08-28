@@ -9,6 +9,7 @@ function EditProduct() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "ShopEase - Edit Product";
     axios.get(`/api/products/${id}`)
       .then(res => setForm(res.data))
       .catch(err => console.error(err));

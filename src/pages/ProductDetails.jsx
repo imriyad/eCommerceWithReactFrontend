@@ -24,6 +24,7 @@ function ProductDetails() {
   const [wishlistChecked, setWishlistChecked] = useState(false);
 
   useEffect(() => {
+    document.title = "ShopEase - Product Details";
     const fetchData = async () => {
       try {
         // Fetch product

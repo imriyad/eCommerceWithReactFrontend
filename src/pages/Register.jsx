@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import axios from "axios";
+import { useEffect } from "react";
 
 // Axios configuration
 axios.defaults.withCredentials = true;
@@ -12,6 +13,9 @@ const Register = () => {
     password: "",
     password_confirmation: ""
   });
+  useEffect(() => { 
+    document.title = "ShopEase - Register";
+  }, []);
 
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});

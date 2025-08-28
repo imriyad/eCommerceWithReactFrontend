@@ -13,6 +13,9 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    
+    document.title = "ShopEase - Home";
+
     fetchProducts(currentPage, searchQuery);
   }, [currentPage, searchQuery]);
 

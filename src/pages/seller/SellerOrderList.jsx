@@ -24,6 +24,7 @@ function SellerOrderList() {
   };
 
   useEffect(() => {
+    document.title = "ShopEase - Seller Order Management";
     fetchOrders();
   }, [search, page]);
 

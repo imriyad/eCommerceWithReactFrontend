@@ -7,6 +7,7 @@ const Settings = () => {
 
   // Load saved preferences
   useEffect(() => {
+    document.title = "ShopEase - Settings";
     const savedLang = localStorage.getItem("language");
     const savedCurrency = localStorage.getItem("currency");
     const savedTheme = localStorage.getItem("theme");

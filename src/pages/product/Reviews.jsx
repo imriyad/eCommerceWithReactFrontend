@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import { useEffect } from "react";
 
 function Reviews({ onSuccess }) {
   const { user } = useAuth();
@@ -15,6 +16,12 @@ function Reviews({ onSuccess }) {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    document.title = `ShopEase - Review ${productName}`;    
+  }, [productName]);  
+
+  // If no productId, show error message
 
   if (!productId) {
     return (

@@ -82,7 +82,8 @@ export default function Checkout() {
     address: "",
     city: "",
     postal_code: "", // match backend field name
-    payment: "cash_on_delivery", // Default to card, options: 'card', 'paypal', 'cod'
+    payment: "cash_on_delivery", // default payment method
+    // For card payments (not used directly here)
     cardNumber: "",
     expiry: "",
     cvc: "",
@@ -90,13 +91,13 @@ export default function Checkout() {
   });
 
   const [activeStep, setActiveStep] = useState(1);
-
-
+  
   const location = useLocation();
-  const buyNowProduct = location.state?.buyNowProduct; // ✅ extract value
+  const buyNowProduct = location.state?.buyNowProduct; 
 
   // Fetch cart items
   useEffect(() => {
+    document.title = "ShopEase - Checkout";
     if (!customer_id) {
       alert("Please login first.");
       navigate("/login");

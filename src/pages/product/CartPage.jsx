@@ -14,6 +14,7 @@ const Cart = () => {
 
   // Fetch cart items
   useEffect(() => {
+    document.title = "ShopEase - My Cart";
 
     axios
       .get(`http://localhost:8000/api/cart/${customer_id}`)
