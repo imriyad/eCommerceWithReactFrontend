@@ -28,7 +28,7 @@ const AdminLayout = () => {
     { title: "Promotions", icon: <FiTag />, path: "/admin/promotions" },
     { title: "Reports", icon: <FiBarChart2 />, path: "/admin/reports" },
     { title: "Settings", icon: <FiSettings />, path: "/admin/settings" },
-    { title: "Logout", icon: <FiLogOut />, action: "logout" }, // special case
+    { title: "Logout", icon: <FiLogOut />, action: "logout" }, 
   ];
 
   const isActiveLink = (path) => location.pathname === path;

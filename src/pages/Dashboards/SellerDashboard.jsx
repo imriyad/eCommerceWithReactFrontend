@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "../../context/AuthContext"; // adjust if needed
+import { useAuth } from "../../context/AuthContext"; 
 
 const SellerDashboard = () => {
   const [stats, setStats] = useState({
@@ -11,13 +11,13 @@ const SellerDashboard = () => {
   });
   const [activities, setActivities] = useState([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
-  const { user } = useAuth(); // get logged-in seller
+  const { user } = useAuth(); 
 
   useEffect(() => {
     document.title = "ShopEase - Seller Dashboard";
     if (!user) return;
 
-    // fetch stats
+    
     axios
       .get("http://localhost:8000/api/seller/stats", {
         headers: {

@@ -40,7 +40,20 @@ function ProductDetails() {
           promo.applicable_products?.some(pid => Number(pid) === productData.id)
         );
 
-        setProduct({ ...productData, promotions: productPromotions });
+        // Fetch average rating for this product
+        let avgRating = 0;
+        try {
+          const reviewRes = await axios.get(`http://localhost:8000/api/reviews/product/${productData.id}`);
+          avgRating = reviewRes.data.avg_rating || 0;
+        } catch (err) {
+          console.error(`Error fetching rating for product ${productData.id}`, err);
+        }
+
+        setProduct({ 
+          ...productData, 
+          promotions: productPromotions,
+          avgRating // Add the average rating to the product
+        });
 
         // Check if product is in user's wishlist
         if (customerId) {
@@ -79,7 +92,23 @@ function ProductDetails() {
               .filter(relatedProduct => relatedProduct.id !== productData.id)
               .slice(0, 6);
 
-            setRelatedProducts(filteredRelated);
+            // Fetch ratings for related products
+            const relatedWithRatings = await Promise.all(
+              filteredRelated.map(async (relatedProduct) => {
+                try {
+                  const reviewRes = await axios.get(
+                    `http://localhost:8000/api/reviews/product/${relatedProduct.id}`
+                  );
+                  const avgRating = reviewRes.data.avg_rating || 0;
+                  return { ...relatedProduct, avgRating };
+                } catch (err) {
+                  console.error(`Error fetching rating for product ${relatedProduct.id}`, err);
+                  return { ...relatedProduct, avgRating: 0 };
+                }
+              })
+            );
+
+            setRelatedProducts(relatedWithRatings);
           } catch (relatedErr) {
             console.error('Failed to fetch related products:', relatedErr);
             // Don't set error for related products failure
@@ -164,8 +193,6 @@ function ProductDetails() {
     });
     window.scrollTo(0, 0);
   };
-
-
 
   const navigateToProduct = (productId) => {
     navigate(`/product/${productId}`);
@@ -259,23 +286,21 @@ function ProductDetails() {
                   {product.name}
                 </h1>
 
-                {/* <div className="flex items-center space-x-2">
+                {/* Rating Display */}
+                <div className="flex items-center space-x-2">
                   <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => {
-                      if (i < Math.floor(product.avg_rating)) {
-                        return <FaStar key={i} className="w-4 h-4" />;
-                      } else if (i < product.avg_rating) {
-                        return <FaStar key={i} className="w-4 h-4" style={{ clipPath: "inset(0 " + (5 - (product.avg_rating - Math.floor(product.avg_rating)) * 5) + "% 0 0)" }} />;
-                      } else {
-                        return <FaRegStar key={i} className="w-4 h-4" />;
-                      }
-                    })}
+                    {[1, 2, 3, 4, 5].map((star) =>
+                      star <= Math.round(product.avgRating || 0) ? (
+                        <FaStar key={star} className="w-4 h-4" />
+                      ) : (
+                        <FaRegStar key={star} className="w-4 h-4" />
+                      )
+                    )}
                   </div>
-                  <span className="text-gray-500 font-medium text-xs">({product.total_reviews})</span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-gray-500 font-medium text-xs">{product.avg_rating} out of 5</span>
-                </div> */}
-
+                  <span className="text-gray-500 font-medium text-xs">
+                    ({product.avgRating ? product.avgRating.toFixed(1) : '0.0'})
+                  </span>
+                </div>
               </div>
 
               {/* Price Section */}
@@ -442,8 +467,8 @@ function ProductDetails() {
                 onClick={addToWishlist}
                 disabled={product.stock === 0 || inWishlist || wishlistLoading || !wishlistChecked}
                 className={`relative w-full group overflow-hidden font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${inWishlist
-                    ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-2 border-green-200'
-                    : 'bg-gradient-to-r from-pink-50 to-rose-50 text-pink-700 border-2 border-pink-200'
+                  ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-2 border-green-200'
+                  : 'bg-gradient-to-r from-pink-50 to-rose-50 text-pink-700 border-2 border-pink-200'
                   }`}
               >
                 {wishlistLoading ? (
@@ -548,11 +573,18 @@ function ProductDetails() {
                       </div>
                       <div className="p-3">
                         <h4 className="font-bold text-base mb-1 text-gray-800 line-clamp-2">{relatedProduct.name}</h4>
-                        <div className="flex items-center mb-1">
-                          <div className="flex text-yellow-400">
-                            {[...Array(5)].map((_, i) => i < 4 ? <FaStar key={i} className="w-3 h-3" /> : <FaRegStar key={i} className="w-3 h-3" />)}
-                          </div>
-                          <span className="ml-1 text-xs text-gray-500">(24)</span>
+                        {/* Rating Display for Related Products */}
+                        <div className="flex items-center mb-2">
+                          {[1, 2, 3, 4, 5].map((star) =>
+                            star <= Math.round(relatedProduct.avgRating || 0) ? (
+                              <FaStar key={star} className="text-yellow-400 w-3 h-3" />
+                            ) : (
+                              <FaRegStar key={star} className="text-yellow-400 w-3 h-3" />
+                            )
+                          )}
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({relatedProduct.avgRating ? relatedProduct.avgRating.toFixed(1) : '0.0'})
+                          </span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-lg font-bold text-indigo-700">${relatedProduct.discount_price || relatedProduct.price}</span>
@@ -619,5 +651,6 @@ function ProductDetails() {
     </div>
   );
 }
-
 export default ProductDetails;
+
+

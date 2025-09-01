@@ -14,6 +14,7 @@ const Chatbot = () => {
     const [inputMessage, setInputMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [sessionId, setSessionId] = useState(null);
     const messagesEndRef = useRef(null);
 
     // Scroll to bottom when messages change
@@ -21,11 +22,32 @@ const Chatbot = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isTyping]);
 
+    // Load chat history if session exists
+    useEffect(() => {
+        const savedSessionId = localStorage.getItem('chatSessionId');
+        if (savedSessionId) {
+            setSessionId(savedSessionId);
+            axios.get(`http://localhost:8000/api/ai/chat/${savedSessionId}`)
+                .then(response => {
+                    const history = response.data.map(msg => ({
+                        id: msg.id,
+                        text: msg.message,
+                        sender: msg.sender,
+                        timestamp: new Date(msg.created_at).toLocaleTimeString(),
+                    }));
+                    setMessages(history);
+                })
+                .catch(error => {
+                    console.error('Error loading chat history:', error);
+                });
+        }
+    }, []);
+
     const handleSend = async () => {
         if (!inputMessage.trim()) return;
 
         const userMessage = {
-            id: messages.length + 1,
+            id: Date.now(),
             text: inputMessage,
             sender: 'user',
             timestamp: new Date().toLocaleTimeString(),
@@ -38,10 +60,17 @@ const Chatbot = () => {
         try {
             const response = await axios.post('http://localhost:8000/api/ai/chat', {
                 message: inputMessage,
+                session_id: sessionId,
             });
 
+            // Save session ID if it's a new session
+            if (!sessionId) {
+                setSessionId(response.data.session_id);
+                localStorage.setItem('chatSessionId', response.data.session_id);
+            }
+
             const botMessage = {
-                id: messages.length + 2,
+                id: Date.now() + 1,
                 text: response.data.response,
                 sender: 'bot',
                 timestamp: new Date().toLocaleTimeString(),
@@ -51,7 +80,7 @@ const Chatbot = () => {
         } catch (error) {
             console.error('Chat error:', error);
             setMessages(prev => [...prev, {
-                id: messages.length + 2,
+                id: Date.now() + 1,
                 text: "Sorry, I'm having trouble connecting. Please try again later.",
                 sender: 'bot',
                 timestamp: new Date().toLocaleTimeString(),
@@ -62,17 +91,17 @@ const Chatbot = () => {
     };
 
     if (!isOpen) {
-    return (
-        <button
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-8 right-8 bg-indigo-600 text-white p-3 pl-4 pr-5 rounded-full shadow-lg hover:bg-indigo-700 transition-all z-50 flex items-center"
-            aria-label="Open chat"
-        >
-            <FiShoppingCart size={24} className="mr-2" />
-            <span className="font-medium">Chat with us</span>
-        </button>
-    );
-}
+        return (
+            <button
+                onClick={() => setIsOpen(true)}
+                className="fixed bottom-8 right-8 bg-indigo-600 text-white p-3 pl-4 pr-5 rounded-full shadow-lg hover:bg-indigo-700 transition-all z-50 flex items-center"
+                aria-label="Open chat"
+            >
+                <FiShoppingCart size={24} className="mr-2" />
+                <span className="font-medium">Chat with us</span>
+            </button>
+        );
+    }
     return (
         <div className="fixed bottom-8 right-8 w-80 h-[500px] flex flex-col bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 z-50">
             {/* Chat header */}
