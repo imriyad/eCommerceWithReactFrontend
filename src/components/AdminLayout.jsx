@@ -26,8 +26,8 @@ const AdminLayout = () => {
     { title: "Users", icon: <FiUsers />, path: "/admin/users" },
     { title: "Orders", icon: <FiShoppingBag />, path: "/admin/orders" },
     { title: "Promotions", icon: <FiTag />, path: "/admin/promotions" },
-    { title: "Reports", icon: <FiBarChart2 />, path: "/admin/reports" },
-    { title: "Settings", icon: <FiSettings />, path: "/admin/settings" },
+    // { title: "Reports", icon: <FiBarChart2 />, path: "/admin/reports" },
+    // { title: "Settings", icon: <FiSettings />, path: "/admin/settings" },
     { title: "Logout", icon: <FiLogOut />, action: "logout" }, 
   ];
 

@@ -55,6 +55,7 @@ const Chatbot = () => {
 
         setMessages(prev => [...prev, userMessage]);
         setInputMessage('');
+        
         setIsTyping(true);
 
         try {
@@ -155,6 +156,7 @@ const Chatbot = () => {
                     </div>
                 )}
 
+                
                 <div ref={messagesEndRef} />
             </div>
 
