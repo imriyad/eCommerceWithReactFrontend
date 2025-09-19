@@ -25,14 +25,33 @@ const Navbar = ({ onSearch }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
+
   // Refs
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
 
   // Load all products for local search
+  // useEffect(() => {
+  //   // axios.get("/api/products").then((res) => setAllProducts(res.data));
+  //       axios.get("/api/products").then((res) => setAllProducts(res.data));
+
+  // }, []);
+
   useEffect(() => {
-    axios.get("/api/products").then((res) => setAllProducts(res.data));
-  }, []);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/api/products`);
+      setAllProducts(res.data); // assuming you have a state called allProducts
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setAllProducts([]); // optional: clear products on error
+    }
+  };
+
+  fetchProducts();
+}, []); 
 
   // Debounced search
   const debouncedSearch = useCallback(
