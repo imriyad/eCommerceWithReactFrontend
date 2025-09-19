@@ -237,7 +237,7 @@ function ProductDetails() {
           <div className="flex justify-center items-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 shadow-inner hover:shadow-lg transition-all duration-300 group relative">
             <div className="relative overflow-hidden rounded-lg">
               <img
-                src={product.image ? `http://localhost:8000/storage/${product.image}` : "https://via.placeholder.com/600x600?text=No+Image"}
+                src={product.image ? `/storage/${product.image}` : "https://via.placeholder.com/600x600?text=No+Image"}
                 alt={product.name}
                 className="w-full max-h-[350px] object-contain rounded-lg transform transition-all duration-300 group-hover:scale-105 group-hover:rotate-1"
               />
@@ -570,7 +570,7 @@ function ProductDetails() {
                     >
                       <div className="h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-3 group">
                         <img
-                          src={relatedProduct.image ? `http://localhost:8000/storage/${relatedProduct.image}` : "https://via.placeholder.com/300x300?text=No+Image"}
+                          src={relatedProduct.image ? `/storage/${relatedProduct.image}` : "https://via.placeholder.com/300x300?text=No+Image"}
                           alt={relatedProduct.name}
                           className="h-full object-contain transform transition-transform duration-300 group-hover:scale-110"
                         />

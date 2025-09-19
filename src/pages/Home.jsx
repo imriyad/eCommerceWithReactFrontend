@@ -143,7 +143,7 @@ const Home = () => {
                 <div className="relative overflow-hidden h-48">
                   <img
                     // src={`${apiUrl}/storage/${product.image}`}
-                   src={product.image ? `http://localhost:8000/storage/${product.image}` : "https://via.placeholder.com/600x600?text=No+Image"}
+                   src={product.image ? `/storage/${product.image}` : "https://via.placeholder.com/600x600?text=No+Image"}
 
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
