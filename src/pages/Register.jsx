@@ -4,7 +4,10 @@ import { useEffect } from "react";
 
 // Axios configuration
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:8000";
+// axios.defaults.baseURL = "http://localhost:8000";
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
+
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -27,31 +30,53 @@ const Register = () => {
     });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setMessage("");
+  //   setErrors({});
+
+  //   try {
+  //     await axios.post("/api/register", form);
+  //     // setMessage("✅ Registration successful!");
+  //     alert("✅ Registration successful! Please login.");
+  //     setForm({
+  //       name: "",
+  //       email: "",
+  //       password: "",
+  //       password_confirmation: ""
+  //     });
+  //   } catch (error) {
+  //     if (error.response?.data?.errors) {
+  //       setErrors(error.response.data.errors); // Laravel validation errors
+  //     } else {
+  //       // setMessage("❌ Registration failed.");
+  //       alert("❌ Registration failed. Please try again.");
+  //     }
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    setErrors({});
+  e.preventDefault();
+  setMessage("");
+  setErrors({});
 
-    try {
-      await axios.post("/api/register", form);
-      // setMessage("✅ Registration successful!");
-      alert("✅ Registration successful! Please login.");
-      setForm({
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: ""
-      });
-    } catch (error) {
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors); // Laravel validation errors
-      } else {
-        // setMessage("❌ Registration failed.");
-        alert("❌ Registration failed. Please try again.");
-      }
+  try {
+    await axios.post(`${apiUrl}/api/register`, form); // updated URL
+    alert("✅ Registration successful! Please login.");
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      password_confirmation: ""
+    });
+  } catch (error) {
+    if (error.response?.data?.errors) {
+      setErrors(error.response.data.errors); // Laravel validation errors
+    } else {
+      alert("❌ Registration failed. Please try again.");
     }
-  };
-
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full bg-white bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-10 border border-indigo-300">

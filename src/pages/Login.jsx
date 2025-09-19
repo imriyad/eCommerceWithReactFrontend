@@ -13,24 +13,51 @@ function Login() {
     }, []);
   
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      await axios.get('http://localhost:8000/sanctum/csrf-cookie');
-      const res = await axios.post('http://localhost:8000/api/login', form);
-      const user = res.data.user;
-      sessionStorage.setItem("user", JSON.stringify(user));
-        console.log("Logged in user:", user);
-      const role = user.role;
+  // const handleSubmit = async e => {
+  //   e.preventDefault();
+  //   try {
+  //     await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+  //     const res = await axios.post('http://localhost:8000/api/login', form);
+  //     const user = res.data.user;
+  //     sessionStorage.setItem("user", JSON.stringify(user));
+  //       console.log("Logged in user:", user);
+  //     const role = user.role;
 
-      if (role === 'admin') window.location.href = '/admin/dashboard';
-      else if (role === 'seller') window.location.href = '/seller/dashboard';
-      else if (role === 'customer') window.location.href = '/customer/dashboard';
-      else navigate('/');
-    } catch (error) {
-      alert('Login failed');
-    }
-  };
+  //     if (role === 'admin') window.location.href = '/admin/dashboard';
+  //     else if (role === 'seller') window.location.href = '/seller/dashboard';
+  //     else if (role === 'customer') window.location.href = '/customer/dashboard';
+  //     else navigate('/');
+  //   } catch (error) {
+  //     alert('Login failed');
+  //   }
+  // };
+
+
+const apiUrl = process.env.REACT_APP_API_URL; // make sure this is set in .env
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    // Get CSRF cookie
+    await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
+
+    // Login request
+    const res = await axios.post(`${apiUrl}/api/login`, form);
+
+    const user = res.data.user;
+    sessionStorage.setItem("user", JSON.stringify(user));
+    console.log("Logged in user:", user);
+
+    const role = user.role;
+    if (role === 'admin') window.location.href = '/admin/dashboard';
+    else if (role === 'seller') window.location.href = '/seller/dashboard';
+    else if (role === 'customer') window.location.href = '/customer/dashboard';
+    else navigate('/');
+  } catch (error) {
+    console.error("Login error:", error);
+    alert('Login failed');
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 flex items-center justify-center px-4">
