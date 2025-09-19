@@ -12,6 +12,9 @@ const Home = () => {
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
+
   useEffect(() => {
 
     document.title = "ShopEase - Home";
@@ -24,7 +27,9 @@ const Home = () => {
     setError("");
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/products?page=${page}&search=${encodeURIComponent(search)}`
+        // `http://localhost:8000/api/products?page=${page}&search=${encodeURIComponent(search)}`
+       `${apiUrl}/api/products?page=${page}&search=${encodeURIComponent(search)}`
+
       );
 
       let productsData = [];
@@ -42,7 +47,9 @@ const Home = () => {
       }
 
       // Fetch active promotions
-      const promosRes = await axios.get("http://localhost:8000/api/promotions/active");
+      // const promosRes = await axios.get("http://localhost:8000/api/promotions/active");
+      const promosRes = await axios.get(`${apiUrl}/api/promotions/active`);
+
       const activePromos = promosRes.data;
 
       // Attach promotion discount to each product
@@ -60,7 +67,9 @@ const Home = () => {
       const productsWithRating = await Promise.all(
         productsWithPromo.map(async (product) => {
           try {
-            const reviewRes = await axios.get(`http://localhost:8000/api/reviews/product/${product.id}`);
+            // const reviewRes = await axios.get(`http://localhost:8000/api/reviews/product/${product.id}`);
+            const reviewRes = await axios.get(`${apiUrl}/api/reviews/product/${product.id}`);
+
             const avgRating = reviewRes.data.avg_rating || 0;
             return { ...product, avgRating };
           } catch (err) {
@@ -253,3 +262,51 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
+
+
+
+
+
+
+// Perfect, adding the backend URL as an environment variable in Vercel is the right step.
+
+// A few important things to make it work:
+
+// Variable Name
+
+// You used API_URL. Make sure your frontend code actually reads this variable, e.g.:
+
+// const apiUrl = process.env.API_URL;
+
+
+// Restart Deployment
+
+// After changing or adding environment variables in Vercel, you must redeploy the frontend. Otherwise, the new value won’t take effect.
+
+// Check .env in Frontend
+
+// If your frontend is React (CRA) or Next.js, environment variables need to be prefixed correctly:
+
+// CRA: REACT_APP_API_URL
+
+// Next.js: NEXT_PUBLIC_API_URL
+
+// So in Vercel, the key should match the prefix your frontend expects.
+
+// Use in Axios or Fetch
+
+// axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`)
+
+
+// or for CRA:
+
+// axios.get(`${process.env.REACT_APP_API_URL}/products`)
+
+
+// If you want, I can tell you exactly how to configure it for your React frontend so it talks to the Railway Laravel backend. Do you want me to do that?
+
+// C
