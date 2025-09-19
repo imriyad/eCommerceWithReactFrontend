@@ -5,8 +5,6 @@ import {
   FiUsers,
   FiShoppingBag,
   FiTag,
-  FiBarChart2,
-  FiSettings,
   FiLogOut,
   FiHome,
   FiMenu,
@@ -26,8 +24,6 @@ const AdminLayout = () => {
     { title: "Users", icon: <FiUsers />, path: "/admin/users" },
     { title: "Orders", icon: <FiShoppingBag />, path: "/admin/orders" },
     { title: "Promotions", icon: <FiTag />, path: "/admin/promotions" },
-    // { title: "Reports", icon: <FiBarChart2 />, path: "/admin/reports" },
-    // { title: "Settings", icon: <FiSettings />, path: "/admin/settings" },
     { title: "Logout", icon: <FiLogOut />, action: "logout" }, 
   ];
 
@@ -39,8 +35,6 @@ const AdminLayout = () => {
     localStorage.removeItem("user");
     sessionStorage.clear();
 
-    // If you use context for auth:
-    // setAuth(null);
 
     // ✅ Redirect to login
     navigate("/login", { replace: true });
@@ -73,7 +67,6 @@ const AdminLayout = () => {
             <FiX size={24} />
           </button>
         </div>
-
         <nav className="flex-1">
           <ul className="space-y-2">
             {sidebarLinks.map((link, index) => (

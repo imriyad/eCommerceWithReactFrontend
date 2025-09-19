@@ -59,7 +59,9 @@ const SpecialOffers = () => {
 
     if (error)
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+            // <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+            <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
+
                 <div className="bg-white p-6 rounded-xl shadow-lg text-center max-w-md">
                     <div className="text-red-500 text-5xl mb-4">⚠️</div>
                     <h2 className="text-xl font-bold text-gray-800 mb-2">Oops!</h2>
@@ -70,23 +72,31 @@ const SpecialOffers = () => {
                     >
                         Try Again
                     </button>
-                    
+
                 </div>
             </div>
         );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-8 px-4">
+        // <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-8 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
+
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+                    {/* <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
                         Special{" "}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">
                             Deals
                         </span>
+                    </h1> */}
+
+                    <h1 className="text-3xl md:text-4xl font-extrabold mb-3">
+                        Special <span className="text-yellow-400">Deals</span>
                     </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    {/* <p className="text-lg text-gray-600 max-w-2xl mx-auto"> */}
+                    <p className="text-base text-white/80 max-w-xl mx-auto">
+
                         Discover products with exclusive promotions applied. Grab them before the deals end!
                     </p>
                 </div>

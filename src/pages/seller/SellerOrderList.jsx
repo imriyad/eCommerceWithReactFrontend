@@ -25,8 +25,11 @@ function SellerOrderList() {
 
   useEffect(() => {
     document.title = "ShopEase - Seller Order Management";
+
     fetchOrders();
   }, [search, page]);
+
+
 
   const updateStatus = async (orderId, newStatus) => {
     try {

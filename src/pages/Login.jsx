@@ -38,7 +38,7 @@ function Login() {
         onSubmit={handleSubmit}
         className="bg-white bg-opacity-90 backdrop-blur-md p-10 rounded-2xl  max-w-md w-full border border-indigo-300"
       >
-        <h2 className="text-4xl font-extrabold text-center text-indigo-700 mb-8 drop-shadow-lg">
+        <h2 className="text-4xl font-extrabold text-center text-indigo-700 mb-8 ">
           Welcome Back to ShopEase
         </h2>
 

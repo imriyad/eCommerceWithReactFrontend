@@ -28,9 +28,7 @@ const CustomerLayout = ({ showSidebar = true }) => {
     { title: "Dashboard", icon: <FiHome />, path: "/customer/dashboard" },
     { title: "My Orders", icon: <FiShoppingBag />, path: "/customer/orders" },
     { title: "Wishlist", icon: <FiHeart />, path: "/customer/wishlist" },
-    { title: "Payment Methods", icon: <FiCreditCard />, path: "/customer/payments" },
-    { title: "Profile", icon: <FiUser />, path: "/customer/profile" },
-    { title: "Settings", icon: <FiSettings />, path: "/customer/settings" },
+    { title: "Recommended", icon: <FiStar />, path: "/customer/recommended" }, 
     { title: "Help & Support", icon: <FiHelpCircle />, path: "/customer/support" },
   ];
 

@@ -13,7 +13,7 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    
+
     document.title = "ShopEase - Home";
 
     fetchProducts(currentPage, searchQuery);
@@ -80,6 +80,8 @@ const Home = () => {
     setLoading(false);
   };
 
+
+
   const goToPage = (page) => {
     if (page >= 1 && page <= meta.last_page) {
       setCurrentPage(page);
@@ -90,6 +92,7 @@ const Home = () => {
     setSearchQuery(query);
     setCurrentPage(1);
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
@@ -185,6 +188,7 @@ const Home = () => {
               className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <FiChevronLeft className="h-4 w-4" />
+
             </button>
 
             {Array.from({ length: Math.min(5, meta.last_page) }, (_, i) => {

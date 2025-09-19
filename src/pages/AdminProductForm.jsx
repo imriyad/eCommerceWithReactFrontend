@@ -51,6 +51,7 @@ function AdminProductForm() {
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
@@ -71,7 +72,8 @@ function AdminProductForm() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setMessage('✅ Product created successfully!');
+      // setMessage('✅ Product created successfully!');
+      alert('✅ Product created successfully!');
       setForm({
         name: '', description: '', price: '', discount_price: '', tax: '',
         brand: '', stock: '', sku: '', weight: '', dimensions: '', tags: '',
@@ -82,7 +84,8 @@ function AdminProductForm() {
       setImagePreview(null);
     } catch (error) {
       console.error(error);
-      setMessage('❌ Failed to create product. Please check all fields and try again.');
+      // setMessage('❌ Failed to create product. Please check all fields and try again.');
+      alert('❌ Failed to create product. Please check all fields and try again.');
     } finally {
       setIsSubmitting(false);
     }

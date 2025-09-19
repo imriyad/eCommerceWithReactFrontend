@@ -58,7 +58,9 @@ const CategoryProducts = () => {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 py-12 px-4">
+    // <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 py-12 px-4">
+          <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
+
       <div className="max-w-5xl mx-auto">
         <div className="mb-10 text-center">
           <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 drop-shadow-lg">

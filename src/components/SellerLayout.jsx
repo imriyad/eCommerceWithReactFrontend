@@ -25,10 +25,7 @@ const SellerLayout = () => {
     { id: "products", name: "Manage Products", icon: <FiBox size={20} />, path: "/seller/products" },
     { id: "addProducts", name: "Add New Product", icon: <FiPlusCircle size={20} />, path: "/seller/addProducts" },
     { id: "orders", name: "Manage Orders", icon: <FiShoppingCart size={20} />, path: "/seller/orders" },
-    { id: "inventory", name: "Inventory", icon: <FiArchive size={20} />, path: "/seller/inventory" },
-    { id: "reports", name: "Sales Reports", icon: <FiBarChart2 size={20} />, path: "/seller/reports" },
-    { id: "profile", name: "Profile", icon: <FiUser size={20} />, path: "/seller/profile" },
-    { id: "settings", name: "Settings", icon: <FiSettings size={20} />, path: "/seller/settings" },
+     { id: "reports", name: "Sales Reports", icon: <FiBarChart2 size={20} />, path: "/seller/reports" },
   ];
 
   const handleLogout = () => {

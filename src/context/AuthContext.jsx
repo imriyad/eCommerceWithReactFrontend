@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }) => {
   const role = user?.role || null;
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout }}>
+    // ✅ Now we pass setUser so you can call it in AccountSettings.jsx
+    <AuthContext.Provider value={{ user, role, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

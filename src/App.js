@@ -38,6 +38,7 @@ import HelpSupport from "./pages/HelpSupport";
 import Settings from "./pages/Settings";
 import CustomerWishlist from "./pages/product/CustomerWishlist";
 import Reviews from "./pages/product/Reviews";
+import RecommendedProducts from "./pages/product/RecommendedProducts";
 
 
 function App() {
@@ -73,6 +74,7 @@ function App() {
               <Route path="support" element={<HelpSupport />} />
               <Route path="settings" element={<Settings />} />
               <Route path="wishlist" element={<CustomerWishlist />} />
+              <Route path="recommended" element={<RecommendedProducts />} />
 
             </Route>
 

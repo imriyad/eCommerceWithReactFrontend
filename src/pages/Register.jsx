@@ -33,9 +33,9 @@ const Register = () => {
     setErrors({});
 
     try {
-      await axios.get("/sanctum/csrf-cookie"); // Required by Sanctum
       await axios.post("/api/register", form);
-      setMessage("✅ Registration successful!");
+      // setMessage("✅ Registration successful!");
+      alert("✅ Registration successful! Please login.");
       setForm({
         name: "",
         email: "",
@@ -46,7 +46,8 @@ const Register = () => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors); // Laravel validation errors
       } else {
-        setMessage("❌ Registration failed.");
+        // setMessage("❌ Registration failed.");
+        alert("❌ Registration failed. Please try again.");
       }
     }
   };

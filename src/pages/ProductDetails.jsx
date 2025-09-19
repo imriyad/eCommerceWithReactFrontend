@@ -4,6 +4,7 @@ import axios from "axios";
 import { FiShoppingCart, FiPlus, FiMinus, FiHeart, FiStar } from "react-icons/fi";
 import { FaStar, FaRegStar, FaCheck, FaHeart } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { KeyIcon } from "@heroicons/react/16/solid";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -46,7 +47,9 @@ function ProductDetails() {
           const reviewRes = await axios.get(`http://localhost:8000/api/reviews/product/${productData.id}`);
           avgRating = reviewRes.data.avg_rating || 0;
         } catch (err) {
+  
           console.error(`Error fetching rating for product ${productData.id}`, err);
+          
         }
 
         setProduct({ 
@@ -86,7 +89,6 @@ function ProductDetails() {
             } else if (relatedRes.data && relatedRes.data.data) {
               relatedProductsData = relatedRes.data.data;
             }
-
             // Filter out the current product and limit to 6 related products
             const filteredRelated = relatedProductsData
               .filter(relatedProduct => relatedProduct.id !== productData.id)
