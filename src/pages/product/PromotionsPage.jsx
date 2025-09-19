@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext"; // adjust path if needed
 
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
 // API base URL
-const API_URL = "http://localhost:8000/api/promotions";
+const API_URL = `${apiUrl}/api/promotions`;
 
 const PromotionsPage = () => {
   const [promotions, setPromotions] = useState([]);
@@ -47,7 +48,7 @@ const getActivePromotionForProduct = (productId) => {
   
   const logAdminActivity = async (message) => {
   try {
-    await axios.post('http://localhost:8000/api/admin/recent-activities', {
+    await axios.post(`${apiUrl}/api/admin/recent-activities`, {
       admin_id: user.id, // make sure you have `user` object (from context or session)
       message: message,
     });

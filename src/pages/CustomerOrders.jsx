@@ -1,14 +1,18 @@
+
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FiPackage, FiCheckCircle, FiTruck, FiClock } from "react-icons/fi";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const statusIcons = {
   Delivered: <FiCheckCircle className="text-green-500 w-5 h-5 mr-1" />,
   Shipped: <FiTruck className="text-blue-500 w-5 h-5 mr-1" />,
   Processing: <FiClock className="text-yellow-500 w-5 h-5 mr-1" />,
 };
+
 
 const CustomerOrders = () => {
   const { user } = useAuth();
@@ -23,7 +27,7 @@ const CustomerOrders = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/customer/orders/${user.id}`
+          `${apiUrl}/api/customer/orders/${user.id}`
         );
         setOrders(res.data.orders);
       } catch (err) {
@@ -103,7 +107,7 @@ const CustomerOrders = () => {
                   <div key={item.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <img
-                        src={`http://localhost:8000/storage/${item.product.image}`}
+                        src={`${apiUrl}/storage/${item.product.image}`}
                         alt={item.product.name}
                         className="w-12 h-12 object-cover rounded"
                       />

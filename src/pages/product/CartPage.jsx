@@ -16,13 +16,15 @@ const Cart = () => {
   const subtotal = cartItems.reduce((total, item) => {
     return total + (item.product.price * item.quantity);
   }, 0);
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
 
   // Fetch cart items
   useEffect(() => {
     document.title = "ShopEase - My Cart";
 
     axios
-      .get(`http://localhost:8000/api/cart/${customer_id}`)
+      .get(`${apiUrl}/api/cart/${customer_id}`)
       .then((res) => setCartItems(res.data))
       .catch((err) => console.error("Failed to fetch cart items:", err));
   }, [customer_id, navigate]);
@@ -30,7 +32,7 @@ const Cart = () => {
   // Delete cart item
   const handleDelete = async (cartId) => {
     try {
-      await axios.delete(`http://localhost:8000/api/cart/${cartId}`);
+      await axios.delete(`${apiUrl}/api/cart/${cartId}`);
       setCartItems((prev) => prev.filter((item) => item.id !== cartId));
       showMessage("✅ Product removed from cart.");
     } catch (error) {
@@ -50,7 +52,7 @@ const Cart = () => {
     if (newQty < 1) return; // Prevent zero or negative quantities
 
     try {
-      await axios.put(`http://localhost:8000/api/cart/${cartId}`, {
+      await axios.put(`${apiUrl}/api/cart/${cartId}`, {
         quantity: newQty,
       });
 
@@ -109,7 +111,7 @@ const Cart = () => {
                 className="flex items-center gap-6 p-4 bg-white shadow rounded-lg"
               >
                 <img
-                  src={`http://localhost:8000/storage/${item.product.image}`}
+                  src={`${apiUrl}/storage/${item.product.image}`}
                   alt={item.product.name}
                   className="w-24 h-24 object-cover rounded"
                 />

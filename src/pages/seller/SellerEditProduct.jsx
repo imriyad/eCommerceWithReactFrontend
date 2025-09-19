@@ -7,6 +7,7 @@ function SellerEditProduct() {
   const [form, setForm] = useState({ name: "", brand: "", price: "", stock: "" });
   const { id } = useParams();
   const navigate = useNavigate();
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
   useEffect(() => {
     document.title = "ShopEase - Edit Product";
@@ -19,7 +20,7 @@ function SellerEditProduct() {
 
     const logSellerActivity = async (message) => {
   try {
-    await axios.post('http://localhost:8000/api/seller/recent-activities', {
+    await axios.post(`${apiUrl}/api/seller/recent-activities`, {
       seller_id: user.id, // make sure you have `user` object (from context or session)
       message: message,
     });
@@ -37,7 +38,7 @@ function SellerEditProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/products/${id}`, form);
+      await axios.put(`${apiUrl}/api/products/${id}`, form);
       navigate("/seller/products");
       logSellerActivity(`Edited product with ID ${id}`);
     } catch (err) {

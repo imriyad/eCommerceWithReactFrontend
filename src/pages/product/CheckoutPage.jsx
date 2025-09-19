@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
@@ -5,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 
 export default function Checkout() {
@@ -25,7 +28,7 @@ export default function Checkout() {
 
       try {
         // 1. Create payment intent on backend
-        const { data } = await axios.post("http://localhost:8000/api/create-payment-intent", {
+  const { data } = await axios.post(`${apiUrl}/api/create-payment-intent`, {
           amount: Math.round(parseFloat(formData.totalAmount) * 100), // amount in cents
         });
 
@@ -112,7 +115,7 @@ export default function Checkout() {
     } else {
       setLoading(true);
       axios
-        .get(`http://localhost:8000/api/cart/${customer_id}`)
+        .get(`${apiUrl}/api/cart/${customer_id}`)
         .then((res) => {
           setCartItems(res.data);
           setLoading(false);
@@ -170,7 +173,7 @@ export default function Checkout() {
 
       const token = localStorage.getItem("token");
 
-      const response = await axios.post("http://localhost:8000/api/orders", orderData, {
+  const response = await axios.post(`${apiUrl}/api/orders`, orderData, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
@@ -530,7 +533,7 @@ export default function Checkout() {
                       <div key={item.id} className="flex items-start gap-4">
                         <div className="relative flex-shrink-0">
                           <img
-                            src={`http://localhost:8000/storage/${item.product.image}`}
+                            src={`${apiUrl}/storage/${item.product.image}`}
                             alt={item.product.name}
                             className="w-16 h-16 object-cover rounded-lg"
                           />

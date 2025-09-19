@@ -14,6 +14,7 @@ export default function OrderConfirmation() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
   useEffect(() => {
     document.title = "ShopEase - Order Confirmation";
     async function fetchOrder() {
@@ -21,7 +22,7 @@ export default function OrderConfirmation() {
         setLoading(true);
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          `http://localhost:8000/api/orders/${orderId}`,
+          `${apiUrl}/api/orders/${orderId}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }

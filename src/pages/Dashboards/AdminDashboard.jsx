@@ -11,18 +11,19 @@ const AdminDashboard = () => {
   const [activities, setActivities] = useState([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
   const { user } = useAuth();
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
   useEffect(() => {
     document.title = "ShopEase - Admin Dashboard";
     if (!user) return;
 
     axios
-      .get("http://localhost:8000/api/admin/stats")
+      .get(`${apiUrl}/api/admin/stats`)
       .then((response) => setStats(response.data))
       .catch((error) => console.error("Failed to load stats:", error));
 
     axios
-      .get(`http://localhost:8000/api/admin/recent-activities/${user.id}`)
+      .get(`${apiUrl}/api/admin/recent-activities/${user.id}`)
       .then((response) => setActivities(response.data))
       .catch((error) => console.error("Failed to load activities:", error))
       .finally(() => setLoadingActivities(false));

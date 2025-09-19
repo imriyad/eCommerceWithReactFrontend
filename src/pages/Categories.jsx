@@ -9,14 +9,14 @@ const Categories = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
    useEffect(() => {
     document.title = "ShopEase-Categories";
   }, []);
 
   useEffect(() => {
     axios
-      .get("/api/categories")
+      .get(`${apiUrl}/api/categories`)
       .then((res) => {
         setCategories(res.data);
         setLoading(false);

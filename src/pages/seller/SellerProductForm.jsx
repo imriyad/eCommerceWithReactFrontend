@@ -30,9 +30,11 @@ function AdminProductForm() {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
   useEffect(() => {
     document.title = "ShopEase - Create Product";
-    axios.get('http://localhost:8000/api/categories')
+    axios.get(`${apiUrl}/api/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error('Failed to load categories', err));
   }, []);
@@ -46,7 +48,7 @@ function AdminProductForm() {
 
   const logSellerActivity = async (message) => {
     try {
-      await axios.post('http://localhost:8000/api/seller/recent-activities', {
+      await axios.post(`/api/seller/recent-activities`, {
         seller_id: user.id, // make sure you have `user` object (from context or session)
         message: message,
       });
@@ -69,7 +71,7 @@ function AdminProductForm() {
     setIsSubmitting(true);
 
     try {
-      await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
+      await axios.get(`${apiUrl}/sanctum/csrf-cookie`, { withCredentials: true });
 
       const formData = new FormData();
       for (const key in form) {
@@ -78,7 +80,7 @@ function AdminProductForm() {
       formData.append('is_active', form.is_active ? 1 : 0);
       formData.append('image', image);
 
-      await axios.post('http://localhost:8000/api/products', formData, {
+      await axios.post(`/api/products`, formData, {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });

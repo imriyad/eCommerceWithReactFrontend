@@ -12,13 +12,13 @@ function AdminProductList() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
   // Fetch products
   useEffect(() => {
     document.title = "ShopEase - Admin Product List";
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/products");
+        const response = await axios.get(`${apiUrl}/api/products`);
         if (Array.isArray(response.data)) {
           setProducts(response.data);
           setFilteredProducts(response.data);
@@ -74,7 +74,7 @@ function AdminProductList() {
 
   const logAdminActivity = async (message) => {
     try {
-      await axios.post('http://localhost:8000/api/admin/recent-activities', {
+      await axios.post(`${apiUrl}/api/admin/recent-activities`, {
         admin_id: user.id,
         message: message,
       });
@@ -88,7 +88,7 @@ function AdminProductList() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      await axios.delete(`${apiUrl}/api/products/${id}`);
       setProducts(prev => prev.filter(product => product.id !== id));
       alert("Product deleted successfully.");
       logAdminActivity(`Deleted product with ID ${id}`);

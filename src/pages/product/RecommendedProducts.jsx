@@ -9,12 +9,13 @@ const RecommendedProducts = () => {
     const { user } = useAuth();
     const [recommended, setRecommended] = useState([]);
     const [loading, setLoading] = useState(true);
+      const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
     useEffect(() => {
         const fetchRecommended = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:8000/api/customer/recommended/${user.id}`
+                    `${apiUrl}/api/customer/recommended/${user.id}`
                 );
                 
                 // Fetch ratings for each recommended product
@@ -22,7 +23,7 @@ const RecommendedProducts = () => {
                     res.data.recommended.map(async (product) => {
                         try {
                             const reviewRes = await axios.get(
-                                `http://localhost:8000/api/reviews/product/${product.id}`
+                                `${apiUrl}/api/reviews/product/${product.id}`
                             );
                             const avgRating = reviewRes.data.avg_rating || 0;
                             return { ...product, avgRating };

@@ -16,12 +16,14 @@ const CustomerWishlist = () => {
     const customerId = user?.id;
     const [wishlistItems, setWishlistItems] = useState([]);
 
+      const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
     // Fetch wishlist items
     useEffect(() => {
         document.title = "ShopEase - My Wishlist";
 
         axios
-            .get(`http://localhost:8000/api/wishlist/${customer_id}`)
+            .get(`${apiUrl}/api/wishlist/${customer_id}`)
             .then((res) => setWishlist(res.data))
             .catch((err) => console.error("Failed to fetch wishlist items:", err));
     }, [customer_id, navigate]);
@@ -41,7 +43,7 @@ const CustomerWishlist = () => {
 
     const handleRemove = async (productId) => {
     try {
-        await axios.delete(`http://localhost:8000/api/wishlist/${customerId}/${productId}`);
+        await axios.delete(`${apiUrl}/api/wishlist/${customerId}/${productId}`);
       setWishlistItems((prev) => prev.filter((item) => item.id !== productId));
       showMessage("✅ Product removed from wishlist.");
       window.location.reload();
@@ -53,7 +55,7 @@ const CustomerWishlist = () => {
     // Add to cart
     const handleAddToCart = async (product) => {
         try {
-            await axios.post(`http://localhost:8000/api/cart`, {
+            await axios.post(`${apiUrl}/api/cart`, {
                 customer_id,
                 product_id: product.id,
                 quantity: 1,
@@ -92,7 +94,7 @@ const CustomerWishlist = () => {
                             className="flex items-center gap-6 p-4 bg-white shadow rounded-lg"
                         >
                             <img
-                                src={`http://localhost:8000/storage/${item.product.image}`}
+                                src={`${apiUrl}/storage/${item.product.image}`}
                                 alt={item.product.name}
                                 className="w-24 h-24 object-cover rounded"
                             />

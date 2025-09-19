@@ -10,7 +10,7 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
   useEffect(() => {
       document.title = "ShopEase - Admin Users";
     fetchUsers();
@@ -18,7 +18,7 @@ const AdminUsers = () => {
 const { user } = useAuth(); // get logged-in admin
   const logAdminActivity = async (message) => {
   try {
-    await axios.post('http://localhost:8000/api/admin/recent-activities', {
+    await axios.post(`${apiUrl}/api/admin/recent-activities`, {
       admin_id: user.id, // make sure you have `user` object (from context or session)
       message: message,
     });
@@ -30,7 +30,7 @@ const { user } = useAuth(); // get logged-in admin
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get('http://localhost:8000/api/admin/users');
+      const res = await axios.get(`${apiUrl}/api/admin/users`);
       setUsers(res.data);
       setFilteredUsers(res.data);
       setError(null);
@@ -56,10 +56,10 @@ const { user } = useAuth(); // get logged-in admin
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://localhost:8000/api/admin/users/${editingId}`, formData);
+        await axios.put(`${apiUrl}/api/admin/users/${editingId}`, formData);
         logAdminActivity(`User Edited with ID ${editingId}`);
       } else {
-        await axios.post('http://localhost:8000/api/admin/users', formData);
+        await axios.post(`${apiUrl}/api/admin/users`, formData);
         logAdminActivity(`User Created with email ${formData.email}`);
       }
       setEditingId(null);
@@ -79,7 +79,7 @@ const { user } = useAuth(); // get logged-in admin
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.delete(`http://localhost:8000/api/admin/users/${id}`);
+        await axios.delete(`${apiUrl}/api/admin/users/${id}`);
         await fetchUsers();
         logAdminActivity(`User Deleted with ID ${id}`);
       } catch (err) {

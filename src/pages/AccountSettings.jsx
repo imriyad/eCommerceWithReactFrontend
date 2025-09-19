@@ -18,6 +18,8 @@ const AccountSettings = () => {
 
     const [loading, setLoading] = useState(false);
 
+      const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
     useEffect(() => {
         if (user) {
             setProfile({
@@ -41,7 +43,7 @@ const AccountSettings = () => {
             }
 
             const res = await axios.post(
-                `http://localhost:8000/api/customer/profile/${user.id}`,
+                `${apiUrl}/api/customer/profile/${user.id}`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
@@ -71,7 +73,7 @@ const AccountSettings = () => {
         setLoading(true);
         try {
             await axios.post(
-                `http://localhost:8000/api/customer/change-password/${user.id}`,
+                `${apiUrl}/api/customer/change-password/${user.id}`,
                 {
                     current_password: passwords.current_password,
                     new_password: passwords.new_password,

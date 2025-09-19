@@ -13,11 +13,11 @@ const CategoryProducts = () => {
       document.title = "ShopEase - Category Products";
     }, []);
   
-
+  const Url = process.env.REACT_APP_API_URL; // CRA
   useEffect(() => {
     setLoading(true);
     // Use relative URL like the Categories component
-    const apiUrl = `/api/categories/${id}/products`;
+    const apiUrl = `${Url}/api/categories/${id}/products`;
     
     axios
       .get(apiUrl)
@@ -89,7 +89,7 @@ const CategoryProducts = () => {
                 {/* Handle different possible image field names */}
                 {(product.image || product.image_url || product.img || product.photo) ? (
                   <img
-                    src={`http://localhost:8000/storage/${product.image || product.image_url || product.img || product.photo}`}
+                    src={`${Url}/storage/${product.image || product.image_url || product.img || product.photo}`}
                     alt={product.name || product.title || 'Product'}
                     className="w-24 h-24 object-cover rounded-full mb-4 border-4 border-indigo-200"
                     onError={(e) => {

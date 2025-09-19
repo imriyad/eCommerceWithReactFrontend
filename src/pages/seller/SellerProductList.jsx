@@ -7,13 +7,13 @@ function SellerProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
   // Fetch products
   useEffect(() => {
     document.title = "ShopEase - Seller Product List";
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/products");
+        const response = await axios.get(`${apiUrl}/api/products`);
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
@@ -32,7 +32,7 @@ function SellerProductList() {
   const { user } = useAuth(); // get logged-in admin
   const logSellerActivity = async (message) => {
   try {
-    await axios.post('http://localhost:8000/api/seller/recent-activities', {
+    await axios.post(`${apiUrl}/api/seller/recent-activities`, {
       seller_id: user.id, // make sure you have `user` object (from context or session)
       message: message,
     });
@@ -47,7 +47,7 @@ function SellerProductList() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      await axios.delete(`${apiUrl}/api/products/${id}`);
       setProducts(prev => prev.filter(product => product.id !== id));
       alert("Product deleted successfully.");
       logSellerActivity(`Deleted product with ID ${id}`);

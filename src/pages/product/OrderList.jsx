@@ -9,9 +9,11 @@ function OrderList() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth(); // get logged-in admin
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
   const logSellerActivity = async (message) => {
   try {
-    await axios.post('http://localhost:8000/api/seller/recent-activities', {
+    await axios.post(`${apiUrl}/api/seller/recent-activities`, {
       seller_id: user.id, // make sure you have `user` object (from context or session)
       message: message,
     });
@@ -23,7 +25,7 @@ function OrderList() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:8000/api/orders', {
+      const res = await axios.get(`${apiUrl}/api/orders`, {
         params: { search, page },
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('adminToken'),
@@ -46,7 +48,7 @@ function OrderList() {
   const updateStatus = async (orderId, newStatus) => {
     try {
       await axios.patch(
-        `http://localhost:8000/api/orders/${orderId}`,
+        `${apiUrl}/api/orders/${orderId}`,
         { status: newStatus },
         {
           headers: {
@@ -66,7 +68,7 @@ function OrderList() {
   const cancelOrder = async (orderId) => {
     if (!window.confirm('Are you sure you want to cancel this order?')) return;
     try {
-      await axios.delete(`http://localhost:8000/api/orders/${orderId}`, {
+      await axios.delete(`${apiUrl}/api/orders/${orderId}`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('adminToken'),
         },

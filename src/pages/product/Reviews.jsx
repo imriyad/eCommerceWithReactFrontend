@@ -16,6 +16,7 @@ function Reviews({ onSuccess }) {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
   useEffect(() => {
     document.title = `ShopEase - Review ${productName}`;    
@@ -66,7 +67,7 @@ function Reviews({ onSuccess }) {
 
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/reviews/${user.id}/${productId}`,
+        `${apiUrl}/api/reviews/${user.id}/${productId}`,
         { rating, comment }
       );
 

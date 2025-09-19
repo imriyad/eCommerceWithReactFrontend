@@ -5,6 +5,7 @@ const Settings = () => {
   const [currency, setCurrency] = useState("USD");
   const [theme, setTheme] = useState("light");
 
+
   // Load saved preferences
   useEffect(() => {
     document.title = "ShopEase - Settings";

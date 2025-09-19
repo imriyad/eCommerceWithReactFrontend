@@ -24,13 +24,14 @@ function EditProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
   useEffect(() => {
     document.title = "ShopEase - Edit Product";
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/products/${id}`);
+        const response = await axios.get(`${apiUrl}/api/products/${id}`);
         const productData = response.data;
         setOriginalData(productData);
         setForm(productData);
@@ -64,7 +65,7 @@ function EditProduct() {
 
   const logAdminActivity = async (message) => {
     try {
-      await axios.post('http://localhost:8000/api/admin/recent-activities', {
+      await axios.post(`${apiUrl}/api/admin/recent-activities`, {
         admin_id: user.id,
         message: message,
       });

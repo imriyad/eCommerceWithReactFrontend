@@ -7,6 +7,8 @@ const SpecialOffers = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+      const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
     useEffect(() => {
         document.title = "ShopEase - Special Offers";
         const fetchData = async () => {
@@ -14,8 +16,8 @@ const SpecialOffers = () => {
                 setLoading(true);
 
                 const [offersRes, productsRes] = await Promise.all([
-                    axios.get("http://localhost:8000/api/promotions/active"),
-                    axios.get("http://localhost:8000/api/products"),
+                    axios.get(`${apiUrl}/api/promotions/active`),
+                    axios.get(`${apiUrl}/api/products`)
                 ]);
 
                 const offers = offersRes.data;

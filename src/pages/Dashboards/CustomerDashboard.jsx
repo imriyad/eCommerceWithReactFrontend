@@ -35,6 +35,7 @@ const CustomerDashboard = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [loading, setLoading] = useState(true);
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
 
   useEffect(() => {
     document.title = "ShopEase - Customer Dashboard";
@@ -42,7 +43,7 @@ const CustomerDashboard = () => {
     const fetchCustomerData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/customer/dashboard/${user.id}`
+          `${apiUrl}/api/customer/dashboard/${user.id}`
         );
   
         // Set data from API response

@@ -7,10 +7,12 @@ function SellerOrderList() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:8000/api/seller/orders', {
+      const res = await axios.get(`${apiUrl}/api/seller/orders`, {
         params: { search, page },
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('sellerToken'),
@@ -34,7 +36,7 @@ function SellerOrderList() {
   const updateStatus = async (orderId, newStatus) => {
     try {
       await axios.patch(
-        `http://localhost:8000/api/seller/orders/${orderId}`,
+        `${apiUrl}/api/seller/orders/${orderId}`,
         { status: newStatus },
         {
           headers: {
@@ -52,7 +54,7 @@ function SellerOrderList() {
   const cancelOrder = async (orderId) => {
     if (!window.confirm('Are you sure you want to cancel this order?')) return;
     try {
-      await axios.delete(`http://localhost:8000/api/seller/orders/${orderId}`, {
+      await axios.delete(`${apiUrl}/api/seller/orders/${orderId}`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('sellerToken'),
         },

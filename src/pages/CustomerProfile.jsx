@@ -7,7 +7,7 @@ const CustomerProfile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-
+  const apiUrl = process.env.REACT_APP_API_URL; // CRA
   useEffect(() => {
     document.title = "ShopEase - Customer Profile";
     console.log("Logged-in user:", user);
@@ -15,7 +15,7 @@ const CustomerProfile = () => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/customer/profile/${user.id}`
+          `${apiUrl}/api/customer/profile/${user.id}`
         );
         setProfile(res.data);
       } catch (err) {
@@ -42,7 +42,7 @@ const CustomerProfile = () => {
     }
 
     await axios.put(
-      `http://localhost:8000/api/customer/profile/${user.id}`,
+      `${apiUrl}/api/customer/profile/${user.id}`,
       formData,
       {
         headers: {

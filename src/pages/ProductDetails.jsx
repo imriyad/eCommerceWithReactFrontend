@@ -24,16 +24,18 @@ function ProductDetails() {
   const [loadingRelated, setLoadingRelated] = useState(false);
   const [wishlistChecked, setWishlistChecked] = useState(false);
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
   useEffect(() => {
     document.title = "ShopEase - Product Details";
     const fetchData = async () => {
       try {
         // Fetch product
-        const productRes = await axios.get(`http://localhost:8000/api/products/${id}`);
+        const productRes = await axios.get(`${apiUrl}/api/products/${id}`);
         const productData = productRes.data;
 
         // Fetch active promotions
-        const promosRes = await axios.get("http://localhost:8000/api/promotions/active");
+        const promosRes = await axios.get(`${apiUrl}/api/promotions/active`);
         const activePromos = promosRes.data;
 
         // Attach relevant promotions to this product
@@ -44,7 +46,7 @@ function ProductDetails() {
         // Fetch average rating for this product
         let avgRating = 0;
         try {
-          const reviewRes = await axios.get(`http://localhost:8000/api/reviews/product/${productData.id}`);
+          const reviewRes = await axios.get(`${apiUrl}/api/reviews/product/${productData.id}`);
           avgRating = reviewRes.data.avg_rating || 0;
         } catch (err) {
   
@@ -61,7 +63,7 @@ function ProductDetails() {
         // Check if product is in user's wishlist
         if (customerId) {
           try {
-            const wishlistRes = await axios.get(`http://localhost:8000/api/wishlist/${customerId}`);
+            const wishlistRes = await axios.get(`${apiUrl}/api/wishlist/${customerId}`);
             const wishlistItems = wishlistRes.data;
             const isInWishlist = wishlistItems.some(item => item.id === productData.id);
             setInWishlist(isInWishlist);
@@ -78,7 +80,7 @@ function ProductDetails() {
         if (productData.category_id) {
           setLoadingRelated(true);
           try {
-            const relatedRes = await axios.get(`http://localhost:8000/api/categories/${productData.category_id}/products`);
+            const relatedRes = await axios.get(`${apiUrl}/api/categories/${productData.category_id}/products`);
             let relatedProductsData = [];
 
             // Handle different response structures
@@ -99,7 +101,7 @@ function ProductDetails() {
               filteredRelated.map(async (relatedProduct) => {
                 try {
                   const reviewRes = await axios.get(
-                    `http://localhost:8000/api/reviews/product/${relatedProduct.id}`
+                    `${apiUrl}/api/reviews/product/${relatedProduct.id}`
                   );
                   const avgRating = reviewRes.data.avg_rating || 0;
                   return { ...relatedProduct, avgRating };
@@ -141,10 +143,10 @@ function ProductDetails() {
 
     setWishlistLoading(true);
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
+      await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
 
       // Add to wishlist
-      await axios.post(`http://localhost:8000/api/wishlist/${customerId}/${product.id}`);
+      await axios.post(`${apiUrl}/api/wishlist/${customerId}/${product.id}`);
       setInWishlist(true);
       alert("Product added to wishlist");
     } catch (error) {
@@ -166,8 +168,8 @@ function ProductDetails() {
     }
 
     try {
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie");
-      const response = await axios.post("http://localhost:8000/api/cart", {
+      await axios.get(`${apiUrl}/sanctum/csrf-cookie`);
+      const response = await axios.post(`${apiUrl}/api/cart`, {
         customer_id: customerId,
         product_id: product.id,
         quantity,
@@ -182,12 +184,12 @@ function ProductDetails() {
   };
 
   const handleBuyNow = () => {
-    navigate("/checkout", { state: { buyNowProduct: { product, quantity } } });
+    navigate(`${apiUrl}/checkout`, { state: { buyNowProduct: { product, quantity } } });
     window.scrollTo(0, 0);
   };
 
   const handleReview = () => {
-    navigate(`/product/${product.id}/review`, {
+    navigate(`${apiUrl}/product/${product.id}/review`, {
       state: {
         productId: product.id,
         productName: product.name // sending the product name
@@ -197,7 +199,7 @@ function ProductDetails() {
   };
 
   const navigateToProduct = (productId) => {
-    navigate(`/product/${productId}`);
+    navigate(`${apiUrl}/product/${productId}`);
     window.scrollTo(0, 0);
   };
 

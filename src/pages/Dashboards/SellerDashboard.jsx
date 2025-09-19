@@ -14,13 +14,15 @@ const SellerDashboard = () => {
   const [loadingActivities, setLoadingActivities] = useState(true);
   const { user } = useAuth();
 
+    const apiUrl = process.env.REACT_APP_API_URL; // CRA
+
   useEffect(() => {
     document.title = "ShopEase - Seller Dashboard";
     if (!user) return;
 
     // Fetch stats
     axios
-      .get("http://localhost:8000/api/seller/stats", {
+      .get(`${apiUrl}/api/seller/stats`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("sellerToken"),
         },
@@ -30,7 +32,7 @@ const SellerDashboard = () => {
 
     // Fetch activities
     axios
-      .get(`http://localhost:8000/api/seller/recent-activities/${user.id}`, {
+      .get(`${apiUrl}/api/seller/recent-activities/${user.id}`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("sellerToken"),
         },
